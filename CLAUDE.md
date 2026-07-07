@@ -15,7 +15,6 @@
 - 引擎:Godot 4.7(stable)
 - 语言:纯 GDScript(单一语言,不混用其他脚本语言)
 - 渲染管线:Forward+
-- 注:addons/py4godot 为早期实验遗留,非本项目所用,待移除(见「已知技术债」)
 
 ## 目录结构
 
@@ -31,7 +30,7 @@
     │   └── ui/            # HUD、菜单
     ├── resources/         # 关卡数据 .tres
     ├── assets/{art,audio,fonts}
-    └── addons/            # 第三方插件(py4godot 待移除)
+    └── addons/            # 第三方插件(按需)
 
 约定:场景入 scenes/,脚本入 scripts/ 对应子目录;脚本与同名场景配对。
 
@@ -59,11 +58,10 @@
 
 - 运行:编辑器 F5(主场景 boot.tscn);命令行 godot --path .
 - 导出:目标平台待定(默认桌面)
-- 版本控制:项目尚未 git init(见「已知技术债」);.godot/ 已在 .gitignore
+- 版本控制:已 git init;远程 https://github.com/earneet/monk.git;.godot/ 已在 .gitignore
 
 ## 已知技术债
 
-- py4godot 待移除:addons/py4godot 含 2600+ cpython 文件,应整体删除
-- Godot 4.4 → 4.7 升级:project.godot 当前 config/features=4.4,需用 4.7
-  打开并保存以升级,随后回归基本功能
-- git 未初始化:建议尽快 git init 并提交,建立版本基线
+(暂无)
+
+> 历史:初始技术债(py4godot 移除、Godot 4.4→4.7 升级、git init)已于仓库初始化时一并完成。
