@@ -14,3 +14,7 @@ config/name="monk"
 run/main_scene="uid://bapoleovhc5bw"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
+
+[dotnet]
+
+project/assembly_name="monk"
