@@ -4,14 +4,14 @@
 > **任务内容**: 定义 monk(一休扫地)游戏的核心玩法——规则、胜负、操作、机制、关卡与进度、范围边界——作为编码前的基础设计文档。
 > **参考文档**:
 > - `CLAUDE.md`(项目根)—— 项目概述、技术栈、机制清单、架构原则
-> - `docs/superpowers/specs/2026-07-08-guidance-docs-design.md` —— CLAUDE.md 设计 spec(项目指导文档的决策记录)
+> - `docs/project/2026-07-08-guidance-docs-design.md` —— CLAUDE.md 设计 spec(项目指导文档的决策记录)
 > **生成日期**: 2026-07-08
 
 | 字段 | 值 |
 |---|---|
 | 日期 | 2026-07-08 |
 | 状态 | 设计已确认,待 spec 复核 |
-| 产物路径 | `docs/superpowers/specs/2026-07-08-gdd-design.md`(本文件) |
+| 产物路径 | `docs/project/2026-07-08-gdd-design.md`(本文件) |
 | 产出流程 | superpowers:brainstorming →(用户复核)→ writing-plans → 实施 |
 
 ## 1. 背景与目标

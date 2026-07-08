@@ -3,7 +3,7 @@
 > **任务来源**: GDD 批准后,按文档路线图(roadmap)Task 1,制定系统架构设计——把玩法落地为模块职责与接口,作为关卡数据格式 / 机制规范 / 测试约定的地基。
 > **任务内容**: 定义 monk 的系统架构:6 模块划分(GridModel / MechanicSystem / PathState / LevelSystem / UI / InputSystem)、数据模型驱动 + 逻辑 / 表现分离、机制数据驱动(数据 Resource + 独立规则)、状态确定性工程落地、装配方式。
 > **参考文档**:
-> - `docs/superpowers/specs/2026-07-08-gdd-design.md` —— GDD 核心玩法(本架构的上游依据;机制清单与状态确定性原则来源)
+> - `docs/project/2026-07-08-gdd-design.md` —— GDD 核心玩法(本架构的上游依据;机制清单与状态确定性原则来源)
 > - `docs/superpowers/plans/2026-07-08-documentation-roadmap.md` —— 文档路线图(本任务为 Task 1)
 > - `CLAUDE.md`(项目根)—— 架构原则(机制数据驱动、逻辑 / 表现分离、单一职责)、代码规范、目录约定
 > **生成日期**: 2026-07-08
@@ -12,7 +12,7 @@
 |---|---|
 | 日期 | 2026-07-08 |
 | 状态 | 设计已确认,待 spec 复核 |
-| 产物路径 | `docs/superpowers/specs/2026-07-08-system-architecture-design.md`(本文件) |
+| 产物路径 | `docs/project/2026-07-08-system-architecture-design.md`(本文件) |
 | 产出流程 | superpowers:brainstorming →(用户复核)→ 实施 |
 | 上游 | GDD 核心玩法、文档路线图 Task 1 |
 

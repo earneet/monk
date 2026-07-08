@@ -3,7 +3,7 @@
 > **任务来源**: 用户请求「在编码之前完善文档」,GDD 核心玩法(spec)完成后,要求制定「**仅文档、不含代码**」的文档撰写路线图,作为持续文档工作的总纲。
 > **任务内容**: 规划 monk 项目编码前的完整设计文档体系(核心 4 份 + 占位 3 份),定义依赖顺序、每份文档的目标 / 大纲 / 验收标准,以及统一的撰写流程。
 > **参考文档**:
-> - `docs/superpowers/specs/2026-07-08-gdd-design.md` —— GDD 核心玩法(本计划的源头与依赖根)
+> - `docs/project/2026-07-08-gdd-design.md` —— GDD 核心玩法(本计划的源头与依赖根)
 > - `CLAUDE.md`(项目根)—— 架构原则、代码规范、目录约定
 > **生成日期**: 2026-07-08
 
@@ -25,7 +25,7 @@
 - **文档头声明(强制)**:开头含「任务来源 / 任务内容 / 参考文档 / 生成日期」(全局 CLAUDE.md)
 - **图表**:优先 Mermaid,除非 ASCII Flow 更能表达意图
 - **编码 / 行尾**:UTF-8 / LF
-- **存放**:设计文档入 `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`;流程 / 计划入 `docs/superpowers/plans/`
+- **存放**:**项目设计文档入 `docs/project/YYYY-MM-DD-<topic>-design.md`**(用户明确:项目文档不写入 superpowers 目录);流程 / 计划入 `docs/superpowers/plans/`
 - **提交**:每份文档完成后独立 git commit(message 遵循项目中文风格,结尾 `Co-Authored-By: Claude <noreply@anthropic.com>`)
 - **统一撰写流程**(每份文档):
   1. brainstorm 该文档的关键设计点(`superpowers:brainstorming`,一次一问至用户确认)
@@ -39,7 +39,7 @@
 
 ```mermaid
 flowchart TD
-    GDD["GDD 核心玩法 ✅"] --> ARCH["1 系统架构设计"]
+    GDD["GDD 核心玩法 ✅"] --> ARCH["1 系统架构设计 ✅"]
     ARCH --> DATA["2 关卡数据格式"]
     ARCH --> MECH["3 机制规范"]
     DATA --> MECH
@@ -53,25 +53,25 @@ flowchart TD
 
 | # | 文档 | 路径 | 依赖 | 阶段 | 状态 |
 |---|---|---|---|---|---|
-| 0 | GDD 核心玩法 | `docs/superpowers/specs/2026-07-08-gdd-design.md` | — | 核心 | ✅ 已完成 |
-| 1 | 系统架构设计 | `docs/superpowers/specs/YYYY-MM-DD-system-architecture-design.md` | 0 | 核心 | ⬜ 待撰写 |
-| 2 | 关卡数据格式 | `docs/superpowers/specs/YYYY-MM-DD-level-data-format-design.md` | 1 | 核心 | ⬜ 待撰写 |
-| 3 | 机制规范 | `docs/superpowers/specs/YYYY-MM-DD-mechanics-spec-design.md` | 1, 2 | 核心 | ⬜ 待撰写 |
-| 4 | 测试约定 | `docs/superpowers/specs/YYYY-MM-DD-testing-convention-design.md` | 1 | 核心 | ⬜ 待撰写 |
-| 5 | 关卡设计指南 | `docs/superpowers/specs/YYYY-MM-DD-level-design-guide-design.md` | 3 | 占位 | ⬜ 后续 |
-| 6 | 美术风格指南 | `docs/superpowers/specs/YYYY-MM-DD-art-style-guide-design.md` | — | 占位 | ⬜ 后续 |
-| 7 | 文档索引 | `docs/superpowers/README.md` | 1~4 | 占位 | ⬜ 后续 |
+| 0 | GDD 核心玩法 | `docs/project/2026-07-08-gdd-design.md` | — | 核心 | ✅ 已完成 |
+| 1 | 系统架构设计 | `docs/project/2026-07-08-system-architecture-design.md` | 0 | 核心 | ✅ 已完成 |
+| 2 | 关卡数据格式 | `docs/project/YYYY-MM-DD-level-data-format-design.md` | 1 | 核心 | ⬜ 待撰写 |
+| 3 | 机制规范 | `docs/project/YYYY-MM-DD-mechanics-spec-design.md` | 1, 2 | 核心 | ⬜ 待撰写 |
+| 4 | 测试约定 | `docs/project/YYYY-MM-DD-testing-convention-design.md` | 1 | 核心 | ⬜ 待撰写 |
+| 5 | 关卡设计指南 | `docs/project/YYYY-MM-DD-level-design-guide-design.md` | 3 | 占位 | ⬜ 后续 |
+| 6 | 美术风格指南 | `docs/project/YYYY-MM-DD-art-style-guide-design.md` | — | 占位 | ⬜ 后续 |
+| 7 | 文档索引 | `docs/README.md` | 1~4 | 占位 | ⬜ 后续 |
 
 > 路径中 `YYYY-MM-DD` 以实际撰写日为准。
 
 ---
 
-## Task 1: 系统架构设计文档
+## Task 1: 系统架构设计文档 ✅
 
 **Files:**
-- Create: `docs/superpowers/specs/YYYY-MM-DD-system-architecture-design.md`
+- Create: `docs/project/2026-07-08-system-architecture-design.md`
 
-**依赖:** GDD(`docs/superpowers/specs/2026-07-08-gdd-design.md`)
+**依赖:** GDD(`docs/project/2026-07-08-gdd-design.md`)
 
 **目标:** 把 GDD 的玩法落地为模块职责划分与接口,使「机制数据驱动 + 状态确定性原则」有明确工程方案。
 
@@ -92,19 +92,19 @@ flowchart TD
 - 逻辑 / 表现分离(CLAUDE.md 架构原则)在模块划分上体现
 
 **撰写步骤:**
-- [ ] Step 1: brainstorm 架构关键设计点(模块划分方案、状态管理范式、机制注册方式),一次一问至用户确认
-- [ ] Step 2: 分节呈现架构设计草稿(按上述 8 章),逐节获用户确认
-- [ ] Step 3: 写入 spec 文件(含文档头声明)
-- [ ] Step 4: 自审(覆盖 GDD 全部机制?模块接口一致?确定性原则落地?有无占位 / 歧义),就地修复
-- [ ] Step 5: 用户复核 spec 文件,按反馈修订
-- [ ] Step 6: `git commit -m "docs: 新增系统架构设计文档"`
+- [x] Step 1: brainstorm 架构关键设计点(模块划分方案、状态管理范式、机制注册方式),一次一问至用户确认
+- [x] Step 2: 分节呈现架构设计草稿(按上述 8 章),逐节获用户确认
+- [x] Step 3: 写入 spec 文件(含文档头声明)
+- [x] Step 4: 自审(覆盖 GDD 全部机制?模块接口一致?确定性原则落地?有无占位 / 歧义),就地修复
+- [x] Step 5: 用户复核 spec 文件,按反馈修订
+- [x] Step 6: `git commit -m "docs: 新增系统架构设计文档"`
 
 ---
 
 ## Task 2: 关卡数据格式文档
 
 **Files:**
-- Create: `docs/superpowers/specs/YYYY-MM-DD-level-data-format-design.md`
+- Create: `docs/project/YYYY-MM-DD-level-data-format-design.md`
 
 **依赖:** Task 1(系统架构)
 
@@ -138,7 +138,7 @@ flowchart TD
 ## Task 3: 机制规范文档
 
 **Files:**
-- Create: `docs/superpowers/specs/YYYY-MM-DD-mechanics-spec-design.md`
+- Create: `docs/project/YYYY-MM-DD-mechanics-spec-design.md`
 
 **依赖:** Task 1(系统架构)+ Task 2(关卡数据格式)
 
@@ -175,7 +175,7 @@ flowchart TD
 ## Task 4: 测试约定文档
 
 **Files:**
-- Create: `docs/superpowers/specs/YYYY-MM-DD-testing-convention-design.md`
+- Create: `docs/project/YYYY-MM-DD-testing-convention-design.md`
 
 **依赖:** Task 1(系统架构)
 
