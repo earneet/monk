@@ -16,3 +16,6 @@ ehthumbs.db
 # IDE / 编辑器(按需取消注释)
 #.vscode/
 #.idea/
+
+# MCP 配置(含本机绝对路径,不入库)
+.mcp.json

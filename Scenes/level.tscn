@@ -1,0 +1,27 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Resource" path="res://resources/levels/test_level_01.tres" id="1_lvl"]
+[ext_resource type="Script" path="res://scripts/level/level_controller.gd" id="2_ctrl"]
+[ext_resource type="Script" path="res://scripts/ui/input_system.gd" id="3_inp"]
+[ext_resource type="Script" path="res://scripts/ui/grid_renderer.gd" id="4_grid"]
+[ext_resource type="Script" path="res://scripts/ui/player_sprite.gd" id="5_plr"]
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="6_hud"]
+
+[node name="Level" type="Node"]
+script = ExtResource("2_ctrl")
+level = ExtResource("1_lvl")
+cell_size = 64
+
+[node name="GridRenderer" type="Node2D" parent="."]
+script = ExtResource("4_grid")
+
+[node name="PlayerSprite" type="Node2D" parent="."]
+script = ExtResource("5_plr")
+
+[node name="InputSystem" type="Node" parent="."]
+script = ExtResource("3_inp")
+
+[node name="HUD" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("6_hud")
