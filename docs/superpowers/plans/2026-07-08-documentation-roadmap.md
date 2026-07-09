@@ -43,7 +43,7 @@ flowchart TD
     ARCH --> DATA["2 关卡数据格式 ✅"]
     ARCH --> MECH["3 机制规范 ✅"]
     DATA --> MECH
-    ARCH --> TEST["4 测试约定"]
+    ARCH --> TEST["4 测试约定 ✅"]
     MECH --> LVL["5 关卡设计指南(占位)"]
     ART["6 美术风格指南(占位)"]
     IDX["7 文档索引(占位)"]
@@ -57,7 +57,7 @@ flowchart TD
 | 1 | 系统架构设计 | `docs/project/2026-07-08-system-architecture-design.md` | 0 | 核心 | ✅ 已完成 |
 | 2 | 关卡数据格式 | `docs/project/2026-07-09-level-data-format-design.md` | 1 | 核心 | ✅ 已完成 |
 | 3 | 机制规范 | `docs/project/2026-07-09-mechanics-spec-design.md` | 1, 2 | 核心 | ✅ 已完成 |
-| 4 | 测试约定 | `docs/project/YYYY-MM-DD-testing-convention-design.md` | 1 | 核心 | ⬜ 待撰写 |
+| 4 | 测试约定 | `docs/project/2026-07-09-testing-convention-design.md` | 1 | 核心 | ✅ 已完成 |
 | 5 | 关卡设计指南 | `docs/project/YYYY-MM-DD-level-design-guide-design.md` | 3 | 占位 | ⬜ 后续 |
 | 6 | 美术风格指南 | `docs/project/YYYY-MM-DD-art-style-guide-design.md` | — | 占位 | ⬜ 后续 |
 | 7 | 文档索引 | `docs/README.md` | 1~4 | 占位 | ⬜ 后续 |
@@ -172,10 +172,10 @@ flowchart TD
 
 ---
 
-## Task 4: 测试约定文档
+## Task 4: 测试约定文档 ✅
 
 **Files:**
-- Create: `docs/project/YYYY-MM-DD-testing-convention-design.md`
+- Create: `docs/project/2026-07-09-testing-convention-design.md`
 
 **依赖:** Task 1(系统架构)
 
@@ -200,12 +200,12 @@ flowchart TD
 - 与架构(Task 1)的模块边界对应
 
 **撰写步骤:**
-- [ ] Step 1: brainstorm 测试约定关键点(GUT 版本、目录结构、TDD 严格度),一次一问至确认
-- [ ] Step 2: 分节呈现约定草稿,逐节确认
-- [ ] Step 3: 写入 spec 文件
-- [ ] Step 4: 自审(覆盖关键场景?与架构模块对应?运行命令明确?),就地修复
-- [ ] Step 5: 用户复核
-- [ ] Step 6: `git commit -m "docs: 新增测试约定文档"`
+- [x] Step 1: brainstorm 测试约定关键点(GUT 版本、目录结构、TDD 严格度),一次一问至确认
+- [x] Step 2: 分节呈现约定草稿,逐节确认
+- [x] Step 3: 写入 spec 文件
+- [x] Step 4: 自审(覆盖关键场景?与架构模块对应?运行命令明确?),就地修复
+- [x] Step 5: 用户复核
+- [x] Step 6: `git commit -m "docs: 新增测试约定文档"`
 
 ---
 
