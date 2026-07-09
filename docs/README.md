@@ -27,6 +27,7 @@ flowchart TD
 | 2 | 关卡数据格式 | `project/2026-07-09-level-data-format-design.md` | ✅ | `.tres` Resource 结构、TileType 矩阵 + 机制列表、章节组织 |
 | 3 | 机制规范 | `project/2026-07-09-mechanics-spec-design.md` | ✅ | 各机制 can_pass / 状态公式(path 纯函数)、数据校验 |
 | 4 | 测试约定 | `project/2026-07-09-testing-convention-design.md` | ✅ | 严格 TDD、GUT、目录结构、关键测试场景 |
+| — | 关卡设计工具 | `project/2026-07-09-level-design-tool-design.md` | ✅ | 路径优先法关卡设计工具(WorkLevelResource + 导出) |
 | — | CLAUDE.md 设计 spec | `project/2026-07-08-guidance-docs-design.md` | ✅ | 项目级 CLAUDE.md 的设计决策记录(历史) |
 
 > 路径相对 `docs/`(即 `docs/project/...`)。
