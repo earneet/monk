@@ -29,6 +29,7 @@ flowchart TD
 | 4 | 测试约定 | `project/2026-07-09-testing-convention-design.md` | ✅ | 严格 TDD、GUT、目录结构、关键测试场景 |
 | — | 关卡设计工具 | `project/2026-07-09-level-design-tool-design.md` | ✅ | 路径优先法关卡设计工具(WorkLevelResource + 导出) |
 | — | 关卡设计指南 | `project/2026-07-09-level-design-guide-design.md` | ✅ | 关卡设计方法论(可解性 / 难度曲线 / 机制引入 / 引导) |
+| — | 美术风格指南 | `project/2026-07-09-art-style-guide-design.md` | ✅ | 禅意水墨方向、配色、机制视觉、UI、资产策略 |
 | — | CLAUDE.md 设计 spec | `project/2026-07-08-guidance-docs-design.md` | ✅ | 项目级 CLAUDE.md 的设计决策记录(历史) |
 
 > 路径相对 `docs/`(即 `docs/project/...`)。

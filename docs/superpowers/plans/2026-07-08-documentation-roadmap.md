@@ -45,7 +45,7 @@ flowchart TD
     DATA --> MECH
     ARCH --> TEST["4 测试约定 ✅"]
     MECH --> LVL["5 关卡设计指南 ✅"]
-    ART["6 美术风格指南(占位)"]
+    ART["6 美术风格指南 ✅"]
     IDX["7 文档索引 ✅"]
 ```
 
@@ -59,7 +59,7 @@ flowchart TD
 | 3 | 机制规范 | `docs/project/2026-07-09-mechanics-spec-design.md` | 1, 2 | 核心 | ✅ 已完成 |
 | 4 | 测试约定 | `docs/project/2026-07-09-testing-convention-design.md` | 1 | 核心 | ✅ 已完成 |
 | 5 | 关卡设计指南 | `docs/project/2026-07-09-level-design-guide-design.md` | 3 | 占位 | ✅ 已完成 |
-| 6 | 美术风格指南 | `docs/project/YYYY-MM-DD-art-style-guide-design.md` | — | 占位 | ⬜ 后续 |
+| 6 | 美术风格指南 | `docs/project/2026-07-09-art-style-guide-design.md` | — | 占位 | ✅ 已完成 |
 | 7 | 文档索引 | `docs/README.md` | 1~4 | 占位 | ✅ 已完成 |
 
 > 路径中 `YYYY-MM-DD` 以实际撰写日为准。
@@ -216,12 +216,12 @@ flowchart TD
 **产物:** `docs/project/2026-07-09-level-design-guide-design.md`
 **状态:** ✅ 已完成(方法论先行;首批实际关卡产出后补实例)
 
-## Task 6: 美术风格指南(占位)
+## Task 6: 美术风格指南 ✅
 
-**依赖:** 无(待美术方向确定,见 GDD §10)
-**目标:** 美术基调、配色、tile 风格、动画原则。
-**触发时机:** 美术方向确定后。
-**状态:** ⬜ 占位(用户要求现在占位),暂不撰写。
+**依赖:** 无(美术方向由本指南确定,补 GDD §10「暂不定」)
+**目标:** 美术方向、配色、tile / 角色、机制视觉、动画、UI、资源规范、资产策略。
+**产物:** `docs/project/2026-07-09-art-style-guide-design.md`
+**状态:** ✅ 已完成(方向定为禅意水墨)
 
 ## Task 7: 文档索引 ✅
 
