@@ -40,7 +40,7 @@
 ```mermaid
 flowchart TD
     GDD["GDD 核心玩法 ✅"] --> ARCH["1 系统架构设计 ✅"]
-    ARCH --> DATA["2 关卡数据格式"]
+    ARCH --> DATA["2 关卡数据格式 ✅"]
     ARCH --> MECH["3 机制规范"]
     DATA --> MECH
     ARCH --> TEST["4 测试约定"]
@@ -55,7 +55,7 @@ flowchart TD
 |---|---|---|---|---|---|
 | 0 | GDD 核心玩法 | `docs/project/2026-07-08-gdd-design.md` | — | 核心 | ✅ 已完成 |
 | 1 | 系统架构设计 | `docs/project/2026-07-08-system-architecture-design.md` | 0 | 核心 | ✅ 已完成 |
-| 2 | 关卡数据格式 | `docs/project/YYYY-MM-DD-level-data-format-design.md` | 1 | 核心 | ⬜ 待撰写 |
+| 2 | 关卡数据格式 | `docs/project/2026-07-09-level-data-format-design.md` | 1 | 核心 | ✅ 已完成 |
 | 3 | 机制规范 | `docs/project/YYYY-MM-DD-mechanics-spec-design.md` | 1, 2 | 核心 | ⬜ 待撰写 |
 | 4 | 测试约定 | `docs/project/YYYY-MM-DD-testing-convention-design.md` | 1 | 核心 | ⬜ 待撰写 |
 | 5 | 关卡设计指南 | `docs/project/YYYY-MM-DD-level-design-guide-design.md` | 3 | 占位 | ⬜ 后续 |
@@ -101,10 +101,10 @@ flowchart TD
 
 ---
 
-## Task 2: 关卡数据格式文档
+## Task 2: 关卡数据格式文档 ✅
 
 **Files:**
-- Create: `docs/project/YYYY-MM-DD-level-data-format-design.md`
+- Create: `docs/project/2026-07-09-level-data-format-design.md`
 
 **依赖:** Task 1(系统架构)
 
@@ -126,12 +126,12 @@ flowchart TD
 - `.tres` 为文本格式,利于 git diff 与版本管理
 
 **撰写步骤:**
-- [ ] Step 1: brainstorm 数据格式关键设计点(Resource 类层次、映射表达、网格表示),一次一问至确认
-- [ ] Step 2: 分节呈现格式设计草稿,逐节确认
-- [ ] Step 3: 写入 spec 文件
-- [ ] Step 4: 自审(字段覆盖 GDD 全部机制?与架构机制系统吻合?可视化方案可行?),就地修复
-- [ ] Step 5: 用户复核
-- [ ] Step 6: `git commit -m "docs: 新增关卡数据格式设计文档"`
+- [x] Step 1: brainstorm 数据格式关键设计点(Resource 类层次、映射表达、网格表示),一次一问至确认
+- [x] Step 2: 分节呈现格式设计草稿,逐节确认
+- [x] Step 3: 写入 spec 文件
+- [x] Step 4: 自审(字段覆盖 GDD 全部机制?与架构机制系统吻合?可视化方案可行?),就地修复
+- [x] Step 5: 用户复核
+- [x] Step 6: `git commit -m "docs: 新增关卡数据格式设计文档"`
 
 ---
 
