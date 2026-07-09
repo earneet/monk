@@ -1,0 +1,2 @@
+class_name FlowingWaterData
+extends MechanicData
