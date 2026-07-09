@@ -41,7 +41,7 @@
 flowchart TD
     GDD["GDD 核心玩法 ✅"] --> ARCH["1 系统架构设计 ✅"]
     ARCH --> DATA["2 关卡数据格式 ✅"]
-    ARCH --> MECH["3 机制规范"]
+    ARCH --> MECH["3 机制规范 ✅"]
     DATA --> MECH
     ARCH --> TEST["4 测试约定"]
     MECH --> LVL["5 关卡设计指南(占位)"]
@@ -56,7 +56,7 @@ flowchart TD
 | 0 | GDD 核心玩法 | `docs/project/2026-07-08-gdd-design.md` | — | 核心 | ✅ 已完成 |
 | 1 | 系统架构设计 | `docs/project/2026-07-08-system-architecture-design.md` | 0 | 核心 | ✅ 已完成 |
 | 2 | 关卡数据格式 | `docs/project/2026-07-09-level-data-format-design.md` | 1 | 核心 | ✅ 已完成 |
-| 3 | 机制规范 | `docs/project/YYYY-MM-DD-mechanics-spec-design.md` | 1, 2 | 核心 | ⬜ 待撰写 |
+| 3 | 机制规范 | `docs/project/2026-07-09-mechanics-spec-design.md` | 1, 2 | 核心 | ✅ 已完成 |
 | 4 | 测试约定 | `docs/project/YYYY-MM-DD-testing-convention-design.md` | 1 | 核心 | ⬜ 待撰写 |
 | 5 | 关卡设计指南 | `docs/project/YYYY-MM-DD-level-design-guide-design.md` | 3 | 占位 | ⬜ 后续 |
 | 6 | 美术风格指南 | `docs/project/YYYY-MM-DD-art-style-guide-design.md` | — | 占位 | ⬜ 后续 |
@@ -135,10 +135,10 @@ flowchart TD
 
 ---
 
-## Task 3: 机制规范文档
+## Task 3: 机制规范文档 ✅
 
 **Files:**
-- Create: `docs/project/YYYY-MM-DD-mechanics-spec-design.md`
+- Create: `docs/project/2026-07-09-mechanics-spec-design.md`
 
 **依赖:** Task 1(系统架构)+ Task 2(关卡数据格式)
 
@@ -163,12 +163,12 @@ flowchart TD
 - 边角情形(无解、不可达、多机关)有明确处理
 
 **撰写步骤:**
-- [ ] Step 1: brainstorm 各机制仍有分歧的细节(如传送强制语义、动态水周期默认值、机关 OR/AND),一次一问至确认
-- [ ] Step 2: 分机制呈现规范草稿,逐条确认
-- [ ] Step 3: 写入 spec 文件
-- [ ] Step 4: 自审(字段名与 Task 1/2 一致?每机制确定性可表达?边角覆盖?),就地修复
-- [ ] Step 5: 用户复核
-- [ ] Step 6: `git commit -m "docs: 新增机制规范文档"`
+- [x] Step 1: brainstorm 各机制仍有分歧的细节(如传送强制语义、动态水周期默认值、机关 OR/AND),一次一问至确认
+- [x] Step 2: 分机制呈现规范草稿,逐条确认
+- [x] Step 3: 写入 spec 文件
+- [x] Step 4: 自审(字段名与 Task 1/2 一致?每机制确定性可表达?边角覆盖?),就地修复
+- [x] Step 5: 用户复核
+- [x] Step 6: `git commit -m "docs: 新增机制规范文档"`
 
 ---
 
