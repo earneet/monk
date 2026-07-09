@@ -11,7 +11,7 @@ func bind(path_state: PathState) -> void:
     _path_state.path_changed.connect(_update)
     _update()
 
-func _update() -> void:
+func _update(_p: Array = []) -> void:
     if _path_state.path.size() > 0:
         var last: Vector2i = _path_state.path[_path_state.path.size() - 1]
         position = (last * cell_size) + Vector2i(cell_size / 2, cell_size / 2)

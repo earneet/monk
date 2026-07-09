@@ -16,7 +16,7 @@ func bind(grid_model: GridModel, mechanic_system: MechanicSystem, path_state: Pa
     _grid_model = grid_model
     _mechanic_system = mechanic_system
     _path_state = path_state
-    _path_state.path_changed.connect(queue_redraw)
+    _path_state.path_changed.connect(func(_p): queue_redraw())
     queue_redraw()
 
 func _draw() -> void:
