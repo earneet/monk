@@ -46,7 +46,7 @@ flowchart TD
     ARCH --> TEST["4 测试约定 ✅"]
     MECH --> LVL["5 关卡设计指南(占位)"]
     ART["6 美术风格指南(占位)"]
-    IDX["7 文档索引(占位)"]
+    IDX["7 文档索引 ✅"]
 ```
 
 ## 文档清单与状态
@@ -60,7 +60,7 @@ flowchart TD
 | 4 | 测试约定 | `docs/project/2026-07-09-testing-convention-design.md` | 1 | 核心 | ✅ 已完成 |
 | 5 | 关卡设计指南 | `docs/project/YYYY-MM-DD-level-design-guide-design.md` | 3 | 占位 | ⬜ 后续 |
 | 6 | 美术风格指南 | `docs/project/YYYY-MM-DD-art-style-guide-design.md` | — | 占位 | ⬜ 后续 |
-| 7 | 文档索引 | `docs/README.md` | 1~4 | 占位 | ⬜ 后续 |
+| 7 | 文档索引 | `docs/README.md` | 1~4 | 占位 | ✅ 已完成 |
 
 > 路径中 `YYYY-MM-DD` 以实际撰写日为准。
 
@@ -223,12 +223,12 @@ flowchart TD
 **触发时机:** 美术方向确定后。
 **状态:** ⬜ 占位(用户要求现在占位),暂不撰写。
 
-## Task 7: 文档索引(占位)
+## Task 7: 文档索引 ✅
 
 **依赖:** Task 1~4(核心文档完成)
 **目标:** `docs/` 导航索引,汇总所有文档、依赖关系与撰写状态。
-**触发时机:** 核心 4 份文档完成后。
-**状态:** ⬜ 占位(用户要求现在占位),暂不撰写。
+**产物:** `docs/README.md`
+**状态:** ✅ 已完成(触发时机满足:核心 4 份文档完成后)
 
 ---
 
