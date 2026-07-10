@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="LevelResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/mechanic_data.gd" id="1_tjqlq"]
+[ext_resource type="Script" path="res://scripts/mechanics/lever_data.gd" id="2_sl87v"]
+[ext_resource type="Script" path="res://scripts/mechanics/door_data.gd" id="3_wt2jl"]
+[ext_resource type="Script" path="res://scripts/mechanics/bridge_data.gd" id="4_fnexj"]
+[ext_resource type="Script" path="res://scripts/mechanics/dynamic_water_data.gd" id="5_yoe4u"]
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="6_d26ex"]
+
+[sub_resource type="Resource" id="Resource_7gbmr"]
+script = ExtResource("2_sl87v")
+id = "L1"
+coord = Vector2i(1, 0)
+
+[sub_resource type="Resource" id="Resource_lqnp5"]
+script = ExtResource("3_wt2jl")
+lever_ids = Array[String](["L1"])
+coord = Vector2i(3, 0)
+
+[sub_resource type="Resource" id="Resource_v5qie"]
+script = ExtResource("4_fnexj")
+lever_ids = Array[String](["L1"])
+coord = Vector2i(4, 2)
+
+[sub_resource type="Resource" id="Resource_22n1g"]
+script = ExtResource("5_yoe4u")
+coord = Vector2i(2, 4)
+
+[resource]
+script = ExtResource("6_d26ex")
+size = Vector2i(5, 5)
+tiles = [Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0])]
+mechanics = Array[ExtResource("1_tjqlq")]([SubResource("Resource_7gbmr"), SubResource("Resource_lqnp5"), SubResource("Resource_v5qie"), SubResource("Resource_22n1g")])
