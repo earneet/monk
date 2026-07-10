@@ -14,6 +14,7 @@ func bind(path_state: PathState) -> void:
 func _update(_p: Array = []) -> void:
     if _path_state.path.size() > 0:
         var last: Vector2i = _path_state.path[_path_state.path.size() - 1]
+        @warning_ignore("integer_division")
         position = (last * cell_size) + Vector2i(cell_size / 2, cell_size / 2)
     queue_redraw()
 

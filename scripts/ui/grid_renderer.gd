@@ -45,7 +45,7 @@ func _draw() -> void:
         draw_line(ca, cb, COLOR_PORTAL, 2.0)
         for endpoint in [a, b]:
             var text_pos := Vector2((endpoint.x + 0.5) * cell_size - 6, (endpoint.y + 0.5) * cell_size - 8)
-            draw_string(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), 0, -1, 16)
+            draw_string(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
 
 func _cell_color(coord: Vector2i, path: Array) -> Color:
     var data: MechanicData = _mechanic_system.data_at(coord)
@@ -64,6 +64,7 @@ func _cell_color(coord: Vector2i, path: Array) -> Color:
     if data is DynamicWaterData:
         var dw := data as DynamicWaterData
         var phase: int = path.size() % dw.period
+        @warning_ignore("integer_division")
         var low: bool = phase < (dw.period + 1) / 2
         return COLOR_DWATER_LOW if low else COLOR_DWATER_HIGH
     if data is PortalData:
