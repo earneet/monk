@@ -197,3 +197,39 @@ func test_validate_accepts_valid_portal():
     lr.mechanics.append(_portal("P1", Vector2i(2, 0)))
     var ls := LevelSystem.new()
     assert_eq(ls.validate(lr), [])
+
+func test_bridge_crossable_after_stepping_lever():
+    var lr := _flat_level(4, 1)
+    var lever := LeverData.new()
+    lever.coord = Vector2i(1, 0)
+    lever.id = "L1"
+    var bridge := BridgeData.new()
+    bridge.coord = Vector2i(2, 0)
+    bridge.lever_ids = ["L1"]
+    lr.mechanics.append(lever)
+    lr.mechanics.append(bridge)
+    var ls := LevelSystem.new()
+    ls.load(lr)
+    assert_true(ls.path_state.move(Vector2i(1, 0)))
+    assert_true(ls.path_state.move(Vector2i(2, 0)))
+
+func test_dynamic_water_low_phase_passable_high_phase_blocked():
+    var lr := _flat_level(3, 1)
+    var dw := DynamicWaterData.new()
+    dw.coord = Vector2i(2, 0)
+    dw.period = 2
+    lr.mechanics.append(dw)
+    var ls := LevelSystem.new()
+    ls.load(lr)
+    ls.path_state.move(Vector2i(1, 0))
+    assert_true(ls.path_state.move(Vector2i(2, 0)))
+
+func test_dynamic_water_high_phase_blocks_first_step():
+    var lr := _flat_level(2, 1)
+    var dw := DynamicWaterData.new()
+    dw.coord = Vector2i(1, 0)
+    dw.period = 2
+    lr.mechanics.append(dw)
+    var ls := LevelSystem.new()
+    ls.load(lr)
+    assert_false(ls.path_state.move(Vector2i(1, 0)))
