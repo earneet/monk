@@ -78,5 +78,8 @@ func test_move_into_portal_peer_already_in_path_rolls_back():
     ms.set_data(Vector2i(2, 0), px)
     var ps := _ps(ms, _gm3())
     ps.move(Vector2i(1, 0))
+    var received: Array = []
+    ps.path_changed.connect(func(p: Array): received.append(p.duplicate()))
     assert_false(ps.move(Vector2i(2, 0)))
     assert_eq(ps.path.size(), 2)
+    assert_eq(received.size(), 0)

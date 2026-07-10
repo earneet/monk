@@ -32,6 +32,8 @@ func move(coord: Vector2i) -> bool:
     return true
 
 func _append_portal_peer(coord: Vector2i) -> bool:
+    # fail-closed: 未注册配对时 pair_of 返回 coord 自身 → peer==coord 命中下方 in path → 回滚入口 → 该格走不进
+    # 异常由 LevelSystem.validate(拒孤立 pair_id)兜底,运行期不可达
     if not (_ms.data_at(coord) is PortalData):
         return true
     var peer: Vector2i = _ms.pair_of(coord)
