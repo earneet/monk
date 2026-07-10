@@ -37,12 +37,12 @@ func load(level: LevelResource) -> void:
     var portals_by_id: Dictionary = {}
     for m in level.mechanics:
         if m is PortalData:
-            var pid: String = (m as PortalData).pair_id
+            var pid := (m as PortalData).pair_id
             var arr: Array = portals_by_id.get(pid, [])
             arr.append(m.coord)
             portals_by_id[pid] = arr
-    for id in portals_by_id:
-        var coords: Array = portals_by_id[id]
+    for pid in portals_by_id:
+        var coords: Array = portals_by_id[pid]
         if coords.size() == 2 and coords[0] != coords[1]:
             mechanic_system.register_portal(coords[0], coords[1])
     for e in validate(level):

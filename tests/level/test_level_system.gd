@@ -138,6 +138,7 @@ func test_load_registers_portal_pair():
     var ls := LevelSystem.new()
     ls.load(lr)
     assert_eq(ls.mechanic_system.pair_of(Vector2i(1, 0)), Vector2i(2, 0))
+    assert_eq(ls.mechanic_system.pair_of(Vector2i(2, 0)), Vector2i(1, 0))
 
 func test_validate_rejects_lone_pair_id():
     var lr := _flat_level(3, 1)
@@ -189,3 +190,10 @@ func test_validate_rejects_goal_as_portal():
     var ls := LevelSystem.new()
     var errs := ls.validate(lr)
     assert_true(errs.any(func(e: String): return e.find("终点") >= 0))
+
+func test_validate_accepts_valid_portal():
+    var lr := _flat_level(3, 1)
+    lr.mechanics.append(_portal("P1", Vector2i(1, 0)))
+    lr.mechanics.append(_portal("P1", Vector2i(2, 0)))
+    var ls := LevelSystem.new()
+    assert_eq(ls.validate(lr), [])
