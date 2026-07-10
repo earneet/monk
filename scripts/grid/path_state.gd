@@ -26,7 +26,19 @@ func move(coord: Vector2i) -> bool:
     if not _ms.can_pass(coord, path):
         return false
     path.append(coord)
+    if not _append_portal_peer(coord):
+        return false
     _emit()
+    return true
+
+func _append_portal_peer(coord: Vector2i) -> bool:
+    if not (_ms.data_at(coord) is PortalData):
+        return true
+    var peer: Vector2i = _ms.pair_of(coord)
+    if peer in path:
+        path.pop_back()
+        return false
+    path.append(peer)
     return true
 
 func undo() -> void:

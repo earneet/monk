@@ -54,3 +54,29 @@ func test_path_changed_signal():
     ps.path_changed.connect(func(p: Array): received.append(p.duplicate()))
     ps.move(Vector2i(1, 0))
     assert_eq(received.size(), 1)
+
+func test_move_into_portal_appends_peer():
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(2, 1))
+    var px := PortalData.new()
+    px.coord = Vector2i(2, 0)
+    px.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), px)
+    var ps := _ps(ms, _gm3())
+    assert_true(ps.move(Vector2i(1, 0)))
+    assert_true(ps.move(Vector2i(2, 0)))
+    assert_eq(ps.path.size(), 4)
+    assert_eq(ps.path[2], Vector2i(2, 0))
+    assert_eq(ps.path[3], Vector2i(2, 1))
+
+func test_move_into_portal_peer_already_in_path_rolls_back():
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(1, 0))
+    var px := PortalData.new()
+    px.coord = Vector2i(2, 0)
+    px.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), px)
+    var ps := _ps(ms, _gm3())
+    ps.move(Vector2i(1, 0))
+    assert_false(ps.move(Vector2i(2, 0)))
+    assert_eq(ps.path.size(), 2)
