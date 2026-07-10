@@ -120,3 +120,22 @@ func test_undo_consecutive_portals_only_last_intent():
     ps.undo()
     assert_eq(ps.path.size(), 4)
     assert_eq(ps.path[3], Vector2i(2, 1))
+
+func test_undo_normal_after_portal_pair_rolls_back_one():
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(2, 1))
+    var px := PortalData.new()
+    px.coord = Vector2i(2, 0)
+    px.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), px)
+    var py := PortalData.new()
+    py.coord = Vector2i(2, 1)
+    py.pair_id = "P1"
+    ms.set_data(Vector2i(2, 1), py)
+    var ps := _ps(ms, _gm3())
+    ps.move(Vector2i(1, 0))
+    ps.move(Vector2i(2, 0))
+    ps.move(Vector2i(1, 1))
+    ps.undo()
+    assert_eq(ps.path.size(), 4)
+    assert_eq(ps.path[3], Vector2i(2, 1))
