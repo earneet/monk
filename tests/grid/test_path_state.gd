@@ -54,3 +54,88 @@ func test_path_changed_signal():
     ps.path_changed.connect(func(p: Array): received.append(p.duplicate()))
     ps.move(Vector2i(1, 0))
     assert_eq(received.size(), 1)
+
+func test_move_into_portal_appends_peer():
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(2, 1))
+    var px := PortalData.new()
+    px.coord = Vector2i(2, 0)
+    px.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), px)
+    var ps := _ps(ms, _gm3())
+    assert_true(ps.move(Vector2i(1, 0)))
+    assert_true(ps.move(Vector2i(2, 0)))
+    assert_eq(ps.path.size(), 4)
+    assert_eq(ps.path[2], Vector2i(2, 0))
+    assert_eq(ps.path[3], Vector2i(2, 1))
+
+func test_move_into_portal_peer_already_in_path_rolls_back():
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(1, 0))
+    var px := PortalData.new()
+    px.coord = Vector2i(2, 0)
+    px.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), px)
+    var ps := _ps(ms, _gm3())
+    ps.move(Vector2i(1, 0))
+    var received: Array = []
+    ps.path_changed.connect(func(p: Array): received.append(p.duplicate()))
+    assert_false(ps.move(Vector2i(2, 0)))
+    assert_eq(ps.path.size(), 2)
+    assert_eq(received.size(), 0)
+
+func _ps_with_portal_pair() -> PathState:
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(2, 1))
+    var px := PortalData.new()
+    px.coord = Vector2i(2, 0)
+    px.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), px)
+    return _ps(ms, _gm3())
+
+func test_undo_portal_pair_rolls_back_two():
+    var ps := _ps_with_portal_pair()
+    ps.move(Vector2i(1, 0))
+    ps.move(Vector2i(2, 0))
+    ps.undo()
+    assert_eq(ps.path.size(), 2)
+    assert_eq(ps.path[1], Vector2i(1, 0))
+
+func test_undo_consecutive_portals_only_last_intent():
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(2, 1))
+    ms.register_portal(Vector2i(1, 1), Vector2i(1, 2))
+    var p1 := PortalData.new()
+    p1.coord = Vector2i(2, 0)
+    p1.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), p1)
+    var p2 := PortalData.new()
+    p2.coord = Vector2i(1, 1)
+    p2.pair_id = "P2"
+    ms.set_data(Vector2i(1, 1), p2)
+    var ps := _ps(ms, _gm3())
+    ps.move(Vector2i(1, 0))
+    ps.move(Vector2i(2, 0))
+    ps.move(Vector2i(1, 1))
+    ps.undo()
+    assert_eq(ps.path.size(), 4)
+    assert_eq(ps.path[3], Vector2i(2, 1))
+
+func test_undo_normal_after_portal_pair_rolls_back_one():
+    var ms := MechanicSystem.new()
+    ms.register_portal(Vector2i(2, 0), Vector2i(2, 1))
+    var px := PortalData.new()
+    px.coord = Vector2i(2, 0)
+    px.pair_id = "P1"
+    ms.set_data(Vector2i(2, 0), px)
+    var py := PortalData.new()
+    py.coord = Vector2i(2, 1)
+    py.pair_id = "P1"
+    ms.set_data(Vector2i(2, 1), py)
+    var ps := _ps(ms, _gm3())
+    ps.move(Vector2i(1, 0))
+    ps.move(Vector2i(2, 0))
+    ps.move(Vector2i(1, 1))
+    ps.undo()
+    assert_eq(ps.path.size(), 4)
+    assert_eq(ps.path[3], Vector2i(2, 1))

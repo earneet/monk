@@ -14,6 +14,7 @@ const COLOR_DOOR := Color(0.45, 0.30, 0.20)
 const COLOR_BRIDGE := Color(0.55, 0.40, 0.25)
 const COLOR_DWATER_LOW := Color(0.62, 0.78, 0.84)
 const COLOR_DWATER_HIGH := Color(0.30, 0.45, 0.55)
+const COLOR_PORTAL := Color(0.55, 0.35, 0.70)
 const COLOR_SWEPT := Color(0.42, 0.42, 0.42, 0.45)
 const COLOR_GRID := Color(0.50, 0.50, 0.50, 0.4)
 
@@ -35,6 +36,16 @@ func _draw() -> void:
             draw_rect(rect, COLOR_GRID, false)
     for c in _path_state.path:
         draw_rect(Rect2(c.x * cell_size, c.y * cell_size, cell_size, cell_size), COLOR_SWEPT, true)
+    var font := ThemeDB.get_default_theme().default_font
+    for pair in _mechanic_system.portal_pairs():
+        var a: Vector2i = pair[0]
+        var b: Vector2i = pair[1]
+        var ca := Vector2((a.x + 0.5) * cell_size, (a.y + 0.5) * cell_size)
+        var cb := Vector2((b.x + 0.5) * cell_size, (b.y + 0.5) * cell_size)
+        draw_line(ca, cb, COLOR_PORTAL, 2.0)
+        for endpoint in [a, b]:
+            var text_pos := Vector2((endpoint.x + 0.5) * cell_size - 6, (endpoint.y + 0.5) * cell_size - 8)
+            draw_string(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), 0, -1, 16)
 
 func _cell_color(coord: Vector2i, path: Array) -> Color:
     var data: MechanicData = _mechanic_system.data_at(coord)
@@ -55,4 +66,6 @@ func _cell_color(coord: Vector2i, path: Array) -> Color:
         var phase: int = path.size() % dw.period
         var low: bool = phase < (dw.period + 1) / 2
         return COLOR_DWATER_LOW if low else COLOR_DWATER_HIGH
+    if data is PortalData:
+        return COLOR_PORTAL
     return COLOR_EMPTY

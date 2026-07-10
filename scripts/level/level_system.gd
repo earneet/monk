@@ -34,6 +34,17 @@ func load(level: LevelResource) -> void:
         if m is LeverData:
             var lever := m as LeverData
             mechanic_system.register_lever(lever.id, lever.coord)
+    var portals_by_id: Dictionary = {}
+    for m in level.mechanics:
+        if m is PortalData:
+            var pid := (m as PortalData).pair_id
+            var arr: Array = portals_by_id.get(pid, [])
+            arr.append(m.coord)
+            portals_by_id[pid] = arr
+    for pid in portals_by_id:
+        var coords: Array = portals_by_id[pid]
+        if coords.size() == 2 and coords[0] != coords[1]:
+            mechanic_system.register_portal(coords[0], coords[1])
     for e in validate(level):
         push_error(e)
     path_state = PathState.new()
@@ -73,6 +84,28 @@ func validate(level: LevelResource) -> Array[String]:
             _validate_lever_ids(errors, (m as DoorData).lever_ids, "DoorData", known_lever_ids)
         elif m is BridgeData:
             _validate_lever_ids(errors, (m as BridgeData).lever_ids, "BridgeData", known_lever_ids)
+    var portal_counts: Dictionary = {}
+    var portal_coords: Dictionary = {}
+    var portal_at: Dictionary = {}
+    for m in level.mechanics:
+        if m is PortalData:
+            var pid := (m as PortalData).pair_id
+            if pid == "":
+                errors.append("PortalData.pair_id 不能为空")
+            portal_counts[pid] = portal_counts.get(pid, 0) + 1
+            var arr: Array = portal_coords.get(pid, [])
+            arr.append(m.coord)
+            portal_coords[pid] = arr
+            portal_at[m.coord] = true
+    for pid in portal_counts:
+        if portal_counts[pid] != 2:
+            errors.append("PortalData.pair_id '%s' 须恰好成对(出现 %d 次)" % [pid, portal_counts[pid]])
+        elif portal_coords[pid][0] == portal_coords[pid][1]:
+            errors.append("PortalData.pair_id '%s' 两端坐标不能相同" % pid)
+    if portal_at.has(level.start):
+        errors.append("起点不能是传送门")
+    if level.goal != Vector2i(-1, -1) and portal_at.has(level.goal):
+        errors.append("终点不能是传送门")
     return errors
 
 func _validate_lever_ids(errors: Array[String], lever_ids: Array[String], owner: String, known: Dictionary) -> void:
