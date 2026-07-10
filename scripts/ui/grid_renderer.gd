@@ -43,13 +43,9 @@ func _draw() -> void:
         var ca := Vector2((a.x + 0.5) * cell_size, (a.y + 0.5) * cell_size)
         var cb := Vector2((b.x + 0.5) * cell_size, (b.y + 0.5) * cell_size)
         draw_line(ca, cb, COLOR_PORTAL, 2.0)
-    for y in range(_grid_model.size.y):
-        for x in range(_grid_model.size.x):
-            var coord := Vector2i(x, y)
-            var data: MechanicData = _mechanic_system.data_at(coord)
-            if data is PortalData:
-                var center := Vector2((x + 0.5) * cell_size - 6, (y + 0.5) * cell_size - 8)
-                draw_string(font, center, (data as PortalData).pair_id.substr(0, 1), 0, -1, 16)
+        for endpoint in [a, b]:
+            var text_pos := Vector2((endpoint.x + 0.5) * cell_size - 6, (endpoint.y + 0.5) * cell_size - 8)
+            draw_string(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), 0, -1, 16)
 
 func _cell_color(coord: Vector2i, path: Array) -> Color:
     var data: MechanicData = _mechanic_system.data_at(coord)
