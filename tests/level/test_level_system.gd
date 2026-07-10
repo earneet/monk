@@ -248,3 +248,13 @@ func test_dynamic_water_high_phase_blocks_first_step():
     var ls := LevelSystem.new()
     ls.load(lr)
     assert_false(ls.path_state.move(Vector2i(1, 0)))
+
+func test_validate_rejects_coord_out_of_bounds():
+    var lr := _flat_level(3, 1)
+    var lever := LeverData.new()
+    lever.coord = Vector2i(99, 99)
+    lever.id = "L1"
+    lr.mechanics.append(lever)
+    var ls := LevelSystem.new()
+    var errs := ls.validate(lr)
+    assert_true(errs.any(func(e: String): return e.find("越界") >= 0))

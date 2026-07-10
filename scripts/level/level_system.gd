@@ -71,6 +71,10 @@ func _goal_satisfied() -> bool:
 
 func validate(level: LevelResource) -> Array[String]:
     var errors: Array[String] = []
+    for m in level.mechanics:
+        var c: Vector2i = m.coord
+        if c.x < 0 or c.x >= level.size.x or c.y < 0 or c.y >= level.size.y:
+            errors.append("机制坐标越界: %s @ (%d,%d) 超出网格 %s" % [m.get_class(), c.x, c.y, level.size])
     var known_lever_ids: Dictionary = {}
     for m in level.mechanics:
         if m is LeverData:
