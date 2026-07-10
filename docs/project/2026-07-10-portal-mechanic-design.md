@@ -261,5 +261,6 @@ for pair in _mechanic_system.portal_pairs():
 
 - 技术债 M1/M2/M4/M5(本批次未纳入,留后续)
 - MechanicData 坐标越界校验(所有机制共性技术债,validate 不查 coord in bounds;审查 Minor m3,留后续)
+- GridRenderer `portal_pairs()` 每帧重建(_draw 每帧调,传送配置 load 后静态;可在 bind 时缓存或 MechanicSystem 缓存;原型期可忽略,final review M2 登记)
 - 正式禅意水墨美术(传送门视觉语言)
 - 关卡设计工具:`@tool` 可视化编辑 + 可解性验证(独立 spec)
