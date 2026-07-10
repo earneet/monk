@@ -37,7 +37,7 @@
 |---|---|---|---|
 | 1 | 传送执行模型 | **A 自动追加** | 玩家踏入口 X(须邻接)→ X 入 path → 系统立即追加出口 Y。path 末端永不停留「入口待出口」半态;move 三层校验零改动,仅末尾追加。对应规范 §6 |
 | 2 | 撤销语义 | **A1 撤两步** | undo pop 后,若新末端传送门的配对端==刚 pop 的格,则它是入口、连带撤。零额外状态,`path` 仍是唯一状态源;传送本就是「一步意图=两格」的原子操作 |
-| 3 | 起点边角 | **S2 禁止起点为传送门** | 起点语义是「初始位置」非「踏入」;validate 报错拒绝。setup 保持单格 |
+| 3 | 起/终点边角 | **S2 禁止起点与 goal 为传送门** | 起点是「初始位置」非「踏入」;goal 是胜利判定末端,若为传送门入口则踏入后被追加配对端、末端≠goal 致永无解(审查 Major)。validate 报错拒绝两者。setup 保持单格 |
 | 4 | GridRenderer 表现 | **P3 同色+标号+配对连线** | 紫色色块 + pair_id 首字符标号 + 配对两端 draw_line;连线直接表达「这两格一对」的机制本质 |
 | 5 | 本批次范围 | **R1 聚焦传送 + 顺手 M3** | 外科手术式修改、边界清晰;M3 因传送改 move 共享测试基建而顺手 |
 
@@ -92,16 +92,20 @@ func move(coord: Vector2i) -> bool:
     if not _ms.can_pass(coord, path):
         return false
     path.append(coord)                      # 入口 X 入(玩家意图步)
-    _append_portal_peer(coord)              # ★新增:若 X 是传送门,追加配对端 Y
+    if not _append_portal_peer(coord):      # ★新增:若 X 是传送门,追加配对端 Y;异常回滚并失败
+        return false
     _emit()
     return true
 
-func _append_portal_peer(coord: Vector2i) -> void:
+func _append_portal_peer(coord: Vector2i) -> bool:
     if not (_ms.data_at(coord) is PortalData):
-        return
+        return true
     var peer: Vector2i = _ms.pair_of(coord)
-    if peer not in path:                     # 成对校验保证 X、Y 各一次;防御性查重
-        path.append(peer)                    # 出口 Y:系统强制步,不查 can_pass(Y 必为 PortalData,恒 true)
+    if peer in path:                         # 异常:不变量被破坏(孤立/自指/重复配置)
+        path.pop_back()                      # 回滚刚 append 的入口 X,避免静默留「入口半态」
+        return false                         # move 失败,异常显形(审查 Major M2)
+    path.append(peer)                        # 出口 Y:系统强制步,不查 can_pass(Y 必为 PortalData,恒 true)
+    return true
 ```
 
 ### 4.2 undo:撤两步(决策 A1)
@@ -153,7 +157,7 @@ func register_portal(a: Vector2i, b: Vector2i) -> void:
     _portal_pairs[b] = a
 
 func pair_of(coord: Vector2i) -> Vector2i:
-    return _portal_pairs.get(coord, coord)   # 已校验关卡不会命中默认值
+    return _portal_pairs.get(coord, coord)   # default 返回自身;已校验关卡不命中。异常(孤立/未注册)由 validate 拦截 + move 回滚(M2)双重防护,不静默
 
 func portal_pairs() -> Array:                # 去重的 [a,b] 列表,供 renderer 画连线
     # 遍历 _portal_pairs,双向 key 去重,每对返回一次
@@ -161,7 +165,9 @@ func portal_pairs() -> Array:                # 去重的 [a,b] 列表,供 render
 
 ### 5.3 LevelSystem:注入 + 校验
 
-**load**(现有 mechanics 遍历对每个 m 仍 `set_data`+`set_mechanic_data`;额外按 pair_id 分组,遍历后注入):
+**load 顺序**(明确,审查 Minor m4):① 遍历 tiles 注入 WALL/FLOWING_WATER → ② 遍历 mechanics populate(set_data/set_mechanic_data,机关 register_lever)→ ③ 按 pair_id 收集 PortalData 坐标、成对且两端不同则 register_portal → ④ validate(level) → ⑤ setup path_state。
+
+**③ 注入配对**(portals_by_id 局部收集;仅 size==2 且两端不同才注入,其余异常由 ④ validate 报错):
 
 ```gdscript
 var portals_by_id: Dictionary = {}            # pair_id -> Array[Vector2i]
@@ -172,25 +178,33 @@ for m in level.mechanics:
         portals_by_id[(m as PortalData).pair_id] = arr
 for id in portals_by_id:
     var coords: Array = portals_by_id[id]
-    if coords.size() == 2:                    # size!=2 由 validate 报错,不注入
+    if coords.size() == 2 and coords[0] != coords[1]:
         mechanic_system.register_portal(coords[0], coords[1])
 ```
 
-**validate**(现有 dynamic_water/door/bridge 校验之后追加):
+**④ validate**(现有 dynamic_water/door/bridge 校验之后追加;portal_coords 在此独立重建以校验两端):
 
 ```gdscript
 var portal_counts: Dictionary = {}
+var portal_coords: Dictionary = {}            # pair_id -> Array[Vector2i]
 for m in level.mechanics:
     if m is PortalData:
         var pid := (m as PortalData).pair_id
         if pid == "":
             errors.append("PortalData.pair_id 不能为空")
         portal_counts[pid] = portal_counts.get(pid, 0) + 1
+        var arr: Array = portal_coords.get(pid, [])
+        arr.append(m.coord)
+        portal_coords[pid] = arr
 for pid in portal_counts:
     if portal_counts[pid] != 2:
         errors.append("PortalData.pair_id '%s' 须恰好成对(出现 %d 次)" % [pid, portal_counts[pid]])
+    elif portal_coords[pid][0] == portal_coords[pid][1]:
+        errors.append("PortalData.pair_id '%s' 两端坐标不能相同" % pid)   # 防 a,a 自指(审查 Minor m2)
 if mechanic_system.data_at(level.start) is PortalData:
-    errors.append("起点不能是传送门")
+    errors.append("起点不能是传送门")          # 决策 S2
+if level.goal != Vector2i(-1, -1) and mechanic_system.data_at(level.goal) is PortalData:
+    errors.append("终点不能是传送门")          # 审查 Major M1:goal 为传送门入口则追加配对端致末端≠goal 永无解
 ```
 
 ### 5.4 GridRenderer(决策 P3)
@@ -205,7 +219,7 @@ for pair in _mechanic_system.portal_pairs():
     var ca := Vector2((a.x + 0.5) * cell_size, (a.y + 0.5) * cell_size)
     var cb := Vector2((b.x + 0.5) * cell_size, (b.y + 0.5) * cell_size)
     draw_line(ca, cb, COLOR_PORTAL, 2.0)       # 配对连线
-# 标号:对每个传送格 draw_string(pair_id 首字符) 于中心(默认字体)
+# 标号:Node2D 无 get_theme_default_font;var _font := ThemeDB.get_default_theme().default_font;对每个传送格 draw_string(_font, 中心坐标, pair_id 首字符)(审查 Major M4)
 ```
 
 统一紫色 + pair_id 首字符标号区分不同对(占位阶段不按 pair_id 调色,标号已足够)。
@@ -213,13 +227,14 @@ for pair in _mechanic_system.portal_pairs():
 ## 6. TDD 顺序(严格红绿重构,每绿 commit)
 
 | # | 步骤 | 红测试(先写) | 绿/验证 |
+| 0 | 规范同步(M3) | — | 更新 mechanics-spec-design.md §3.3 第三层为「传送强制由 §6 自动追加实现,move 不做入口判断」 |
 |---|---|---|---|
 | 1 | PortalData + pair_of 地基 | `pair_of(配对端)` 返回对端;无配对返回自身;现有 38 回归 | 实现 PortalData/register_portal/pair_of;回归绿 |
 | 2 | move 自动追加(A) | 踏入口 X 后 path=`[...,X,Y]`;非传送格 move 不追加(回归) | move 末尾加 `_append_portal_peer`;回归绿 |
 | 3 | undo 撤两步(A1) | `[...A,X,Y]→[...A]`;连续传送只撤最后意图;正常格仍一格(回归) | undo 改造(`pair_of(new_last)==popped`) |
-| 4 | 注入 + 校验 | 成对注入 pair_of 正确;孤立/3 次/空 pair_id 报错;起点传送门报错(S2) | load 注入 + validate 追加 3 类校验 |
+| 4 | 注入 + 校验 | 成对注入 pair_of 正确;孤立/3 次/空 pair_id 报错;配对两端相同报错;起点/goal 为传送门报错(S2) | load 注入 + validate 追加 5 类校验 |
 | 5 | 顺手 M3 | 踩机关→桥铺放可走;动态水 LOW 可走/HIGH 拒绝(move 端到端) | 实现已存(批次1),补测试锁定行为 |
-| 6 | 集成关卡 | `test_level_03.tres`(含传送对)加载 + 走传送路径 + 胜利覆盖 | 集成测试绿 |
+| 6 | 集成关卡 | `test_level_03.tres`(含传送对)加载 + 走传送路径 + 胜利覆盖 | 集成测试绿。最小布局 3×2:start(0,0)→(1,0)→传送门X(2,0)⇒Y(2,1)→(1,1)→(0,1) 覆盖全格(审查 Minor m5) |
 | 7 | GridRenderer P3 | `_cell_color(PortalData)=COLOR_PORTAL` 可单测;连线/标号手动验 | 手动跑游戏可见紫块+连线+标号 |
 | 8 | 全量回归 + 手动通关 | — | 全部 GUT 绿(38+新增)+ 手动跑传送可玩 |
 
@@ -237,7 +252,7 @@ for pair in _mechanic_system.portal_pairs():
 - [ ] `move` 踏入口后自动追加配对端(决策 A);三层校验零改动
 - [ ] `undo` 传送对撤两步、正常格一格、连续传送正确(决策 A1);零额外状态
 - [ ] MechanicSystem `_portal_pairs`/`pair_of`/`portal_pairs`,对称 `_lever_cells`
-- [ ] LevelSystem 注入配对 + 校验(成对/非空 pair_id/起点禁传送 S2)
+- [ ] LevelSystem 注入配对 + 校验(成对/非空 pair_id/两端不同/起点+goal 禁传送 S2)
 - [ ] GridRenderer 紫块+标号+配对连线(决策 P3)
 - [ ] GUT 全绿(38 + 新增,含 M3 move 端到端);手动跑传送可玩
 - [ ] 状态确定性:传送对状态为 path 纯函数,撤销零副作用
@@ -245,5 +260,6 @@ for pair in _mechanic_system.portal_pairs():
 ## 9. 后续
 
 - 技术债 M1/M2/M4/M5(本批次未纳入,留后续)
+- MechanicData 坐标越界校验(所有机制共性技术债,validate 不查 coord in bounds;审查 Minor m3,留后续)
 - 正式禅意水墨美术(传送门视觉语言)
 - 关卡设计工具:`@tool` 可视化编辑 + 可解性验证(独立 spec)
