@@ -9,12 +9,8 @@ func set_data(coord: Vector2i, data: MechanicData) -> void:
 func data_at(coord: Vector2i) -> MechanicData:
     return _data_at.get(coord)
 
-func can_pass(coord: Vector2i, _path: Array) -> bool:
+func can_pass(coord: Vector2i, path: Array) -> bool:
     var data: MechanicData = data_at(coord)
     if data == null:
         return true
-    if data is WallData:
-        return false
-    if data is FlowingWaterData:
-        return false
-    return true
+    return data.can_pass(path, self)

@@ -41,7 +41,7 @@ func need_cover() -> Array[Vector2i]:
         for x in range(_level.size.x):
             var coord := Vector2i(x, y)
             var data: MechanicData = mechanic_system.data_at(coord)
-            if data == null:
+            if data == null or data.counts_for_need_cover():
                 result.append(coord)
     return result
 
