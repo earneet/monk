@@ -30,3 +30,11 @@ func test_period3_phases():
 func test_default_period_is_4():
     var dw := DynamicWaterData.new()
     assert_eq(dw.period, 4)
+
+func test_period_zero_does_not_crash():
+    var ms := _ms_with(Vector2i(0, 0), 0)
+    assert_true(ms.can_pass(Vector2i(0, 0), []))
+
+func test_period_one_does_not_crash():
+    var ms := _ms_with(Vector2i(0, 0), 1)
+    assert_true(ms.can_pass(Vector2i(0, 0), []))

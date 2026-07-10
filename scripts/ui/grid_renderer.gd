@@ -63,6 +63,8 @@ func _cell_color(coord: Vector2i, path: Array) -> Color:
         return COLOR_BRIDGE if placed else COLOR_BRIDGE.darkened(0.35)
     if data is DynamicWaterData:
         var dw := data as DynamicWaterData
+        if dw.period < 2:
+            return COLOR_DWATER_LOW
         var phase: int = path.size() % dw.period
         @warning_ignore("integer_division")
         var low: bool = phase < (dw.period + 1) / 2
