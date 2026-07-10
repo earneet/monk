@@ -20,7 +20,7 @@ func can_pass(coord: Vector2i, path: Array) -> bool:
 func register_lever(id: String, coord: Vector2i) -> void:
     _lever_cells[id] = coord
 
-func is_lever_pressed(lever_ids: Array, path: Array) -> bool:
+func is_lever_pressed(lever_ids: Array[String], path: Array) -> bool:
     for id in lever_ids:
         var c: Variant = _lever_cells.get(id)
         if c != null and c in path:
