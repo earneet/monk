@@ -44,9 +44,14 @@ func _append_portal_peer(coord: Vector2i) -> bool:
     return true
 
 func undo() -> void:
-    if path.size() > 1:
+    if path.size() <= 1:
+        return
+    var popped: Vector2i = path[path.size() - 1]
+    path.pop_back()
+    var new_last: Vector2i = path[path.size() - 1]
+    if _ms.data_at(new_last) is PortalData and _ms.pair_of(new_last) == popped:
         path.pop_back()
-        _emit()
+    _emit()
 
 func is_covered() -> bool:
     for c in _need_cover:
