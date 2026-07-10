@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="LevelResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/mechanic_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/mechanics/portal_data.gd" id="2_pd"]
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="3_lr"]
+
+[sub_resource type="Resource" id="Portal_X"]
+script = ExtResource("2_pd")
+pair_id = "P1"
+coord = Vector2i(2, 0)
+
+[sub_resource type="Resource" id="Portal_Y"]
+script = ExtResource("2_pd")
+pair_id = "P1"
+coord = Vector2i(2, 1)
+
+[resource]
+script = ExtResource("3_lr")
+size = Vector2i(3, 2)
+tiles = [Array[int]([0, 0, 0]), Array[int]([0, 0, 0])]
+mechanics = Array[ExtResource("1_md")]([SubResource("Portal_X"), SubResource("Portal_Y")])
+start = Vector2i(0, 0)
+goal = Vector2i(-1, -1)
