@@ -13,3 +13,16 @@ enum FillRule { BORDER_WALL_INNER_WATER }
 @export var obstacle_overrides: Dictionary = {}
 @export var notes: String
 @export var version: int = 1
+
+func undo_last_step() -> bool:
+    if path.is_empty():
+        return false
+    var last: Vector2i = path[path.size() - 1]
+    path.pop_back()
+    var i := 0
+    while i < mechanics.size():
+        if mechanics[i].coord == last:
+            mechanics.remove_at(i)
+        else:
+            i += 1
+    return true
