@@ -20,3 +20,39 @@ static func generate_spiral(size: Vector2i) -> Array[Vector2i]:
             next = coord + dirs[dir_idx]
         coord = next
     return path
+
+static func generate_hilbert(size: Vector2i) -> Array[Vector2i]:
+    if not _is_square_power_of_2(size):
+        return generate_spiral(size)
+    var n: int = size.x
+    var path: Array[Vector2i] = []
+    for d in range(n * n):
+        path.append(_d2xy(n, d))
+    return path
+
+static func _is_square_power_of_2(size: Vector2i) -> bool:
+    if size.x != size.y:
+        return false
+    var n: int = size.x
+    return n > 0 and (n & (n - 1)) == 0
+
+static func _d2xy(n: int, d: int) -> Vector2i:
+    var x: int = 0
+    var y: int = 0
+    var t: int = d
+    var s: int = 1
+    while s < n:
+        var rx: int = 1 & (t >> 1)
+        var ry: int = 1 & (t ^ rx)
+        if ry == 0:
+            if rx == 1:
+                x = s - 1 - x
+                y = s - 1 - y
+            var tmp: int = x
+            x = y
+            y = tmp
+        x += s * rx
+        y += s * ry
+        t = t >> 2
+        s *= 2
+    return Vector2i(x, y)
