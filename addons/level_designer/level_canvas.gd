@@ -2,7 +2,7 @@
 class_name LevelCanvas
 extends Control
 
-enum Mode { NONE, LEVER, DOOR, PORTAL, BRIDGE, DWATER }
+enum Mode { NONE, LEVER, DOOR, PORTAL, BRIDGE, DWATER, OBSTACLE }
 
 var work: WorkLevelResource
 var cell_size: int = 48
@@ -71,6 +71,9 @@ func _gui_input(event: InputEvent) -> void:
         return
     if mode == Mode.NONE:
         _try_append(coord)
+    elif mode == Mode.OBSTACLE:
+        if not (coord in work.path):
+            _cycle_obstacle(coord)
     elif coord in work.path:
         _annotate(coord)
 
@@ -160,3 +163,22 @@ func _next_pair_id() -> String:
     if count % 2 == 0:
         return "P" + str(count / 2 + 1)
     return last_pair
+
+func _cycle_obstacle(coord: Vector2i) -> void:
+    var current: Variant = work.obstacle_overrides.get(coord, "")
+    if current == "":
+        work.push_undo(func(): _set_override(coord, ""))
+        work.obstacle_overrides[coord] = "WALL"
+    elif current == "WALL":
+        work.push_undo(func(): _set_override(coord, "WALL"))
+        work.obstacle_overrides[coord] = "FLOWING_WATER"
+    else:
+        work.push_undo(func(): _set_override(coord, "FLOWING_WATER"))
+        work.obstacle_overrides.erase(coord)
+    queue_redraw()
+
+func _set_override(coord: Vector2i, value: String) -> void:
+    if value == "":
+        work.obstacle_overrides.erase(coord)
+    else:
+        work.obstacle_overrides[coord] = value
