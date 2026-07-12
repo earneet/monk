@@ -11,6 +11,8 @@ var mode_option: OptionButton
 var lever_option: OptionButton
 var period_spin: SpinBox
 var algo_option: OptionButton
+var start_edit: LineEdit
+var end_edit: LineEdit
 
 func _ready() -> void:
     if work == null:
@@ -75,11 +77,26 @@ func _build_ui() -> void:
     algo_option.add_item("螺旋")
     algo_option.add_item("Hilbert")
     algo_option.add_item("启发式")
+    algo_option.add_item("随机游走")
     toolbar.add_child(algo_option)
     var gen_btn := Button.new()
     gen_btn.text = "生成路径"
     gen_btn.pressed.connect(_on_generate)
     toolbar.add_child(gen_btn)
+    var sl := Label.new()
+    sl.text = "起点(x,y):"
+    toolbar.add_child(sl)
+    start_edit = LineEdit.new()
+    start_edit.text = "0,0"
+    start_edit.custom_minimum_size.x = 40
+    toolbar.add_child(start_edit)
+    var el := Label.new()
+    el.text = "终点(x,y):"
+    toolbar.add_child(el)
+    end_edit = LineEdit.new()
+    end_edit.placeholder_text = "可选"
+    end_edit.custom_minimum_size.x = 40
+    toolbar.add_child(end_edit)
     var mech_bar := HBoxContainer.new()
     vbox.add_child(mech_bar)
     var ml := Label.new()
@@ -187,6 +204,7 @@ func _on_generate() -> void:
         0: path = PathGenerator.generate_spiral(size)
         1: path = PathGenerator.generate_hilbert(size)
         2: path = PathGenerator.generate_heuristic(size)
+        3: path = PathGenerator.generate_random_walk(size, _parse_coord(start_edit.text, Vector2i(0, 0)), _parse_coord(end_edit.text, Vector2i(-1, -1)))
     if path.is_empty():
         print("[LevelDesigner] 生成失败,保留原路径")
         return
@@ -195,3 +213,12 @@ func _on_generate() -> void:
     work.path = path
     _refresh_lever_options()
     canvas.queue_redraw()
+
+func _parse_coord(text: String, default: Vector2i) -> Vector2i:
+    var t := text.strip_edges()
+    if t == "":
+        return default
+    var parts := t.split(",")
+    if parts.size() == 2:
+        return Vector2i(int(parts[0]), int(parts[1]))
+    return default

@@ -42,6 +42,13 @@ func _draw() -> void:
     for c in work.path:
         var rect := Rect2(c.x * cell_size, c.y * cell_size, cell_size, cell_size)
         draw_rect(rect, COLOR_PATH, true)
+    for i in range(work.path.size() - 1):
+        var a := Vector2((work.path[i].x + 0.5) * cell_size, (work.path[i].y + 0.5) * cell_size)
+        var b := Vector2((work.path[i + 1].x + 0.5) * cell_size, (work.path[i + 1].y + 0.5) * cell_size)
+        draw_line(a, b, Color(0.2, 0.2, 0.2), 2.0)
+    if work.path.size() > 0:
+        var start_pos := Vector2((work.path[0].x + 0.5) * cell_size, (work.path[0].y + 0.5) * cell_size)
+        draw_circle(start_pos, 6.0, Color(0.2, 0.8, 0.2))
     var font := ThemeDB.get_default_theme().default_font
     for m in work.mechanics:
         var c: Vector2i = m.coord
