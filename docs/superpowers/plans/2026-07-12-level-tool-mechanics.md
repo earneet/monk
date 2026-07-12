@@ -539,9 +539,9 @@ func _on_clear() -> void:
 
 func _on_mode_changed(idx: int) -> void:
     canvas.mode = idx as LevelCanvas.Mode
-    _on_param_changed(0)
+    _on_param_changed()
 
-func _on_param_changed(_v) -> void:
+func _on_param_changed() -> void:
     canvas.mech_id = id_edit.text
     var ids: Array[String] = []
     for s in lever_ids_edit.text.split(",", false):
@@ -628,4 +628,11 @@ git branch -d feat/level-tool-mechanics
 
 1. **Spec coverage**:spec §1 范围 → Task1-4;§4 校验规则 → Task1 代码;§5 标注交互 → Task3/4;§8 验收 → 验收对照。无遗漏。
 2. **Placeholder scan**:无 TBD;每步完整代码或确切命令。
-3. **Type consistency**:`MechanicOrderValidator.validate(path: Array[Vector2i], mechanics: Array[MechanicData]) -> Array[String]`、`LevelCanvas.Mode` 枚举、`canvas.{mode,mech_id,mech_lever_ids,mech_period}` 前后一致;机制字段与现状(LeverData/DoorData/...)一致。
+3. **Type consistency**:`MechanicOrderValidator.validate(path: Array[Vector2i], mechanics: Array[MechanicData]) -> Array[String]`、`LevelCanvas.Mode` 枚举前后一致。
+
+## 执行中变更(UX 改进,2026-07-12,用户验证反馈触发)
+
+Task3/4 的标注交互在执行后改进,**取代**本 plan 的 Task3/4 代码块:
+- **变更**:机关标注自动分配 id(`L<n>`,扫描现有 max+1 避免重复)、门/桥 lever 改从已标机关下拉选(`OptionButton` 单选→`lever_ids=[id]`)、传送自动按标注顺序配对(`pair_id` 自动,偶数开新对/奇数补对)、移除手填 id/pair_id 输入框;另修 `_on_param_changed` 信号连接(去 `_v` 参数——`text_changed` 0 参连 1 参 callable 在 Godot4 运行时报错)。
+- **理由**:原手填 id/lever_ids 易漏填/不一致(用户验证时机关 id 与门 lever_ids 均空,`MechanicOrderValidator` 误报「门未在机关之前」);自动分配 + 下拉选杜绝手填错误。
+- **实际代码**:`addons/level_designer/level_canvas.gd`(`_make_mechanic`/`_next_lever_id`/`_next_pair_id`)+ `main_view.gd`(`lever_option`/`_refresh_lever_options`/`_on_lever_selected`)。本 plan Task3/4 代码块为原始规划,已被取代,以实际代码为准。
