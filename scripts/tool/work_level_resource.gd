@@ -14,15 +14,14 @@ enum FillRule { BORDER_WALL_INNER_WATER }
 @export var notes: String
 @export var version: int = 1
 
-func undo_last_step() -> bool:
-    if path.is_empty():
+var _undo_stack: Array[Callable] = []
+
+func push_undo(cb: Callable) -> void:
+    _undo_stack.append(cb)
+
+func undo() -> bool:
+    if _undo_stack.is_empty():
         return false
-    var last: Vector2i = path[path.size() - 1]
-    path.pop_back()
-    var i := 0
-    while i < mechanics.size():
-        if mechanics[i].coord == last:
-            mechanics.remove_at(i)
-        else:
-            i += 1
+    var cb: Callable = _undo_stack.pop_back()
+    cb.call()
     return true

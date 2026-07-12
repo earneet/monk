@@ -122,7 +122,7 @@ func _on_clear() -> void:
     canvas.queue_redraw()
 
 func _on_undo() -> void:
-    canvas.work.undo_last_step()
+    canvas.work.undo()
     canvas.queue_redraw()
 
 func _on_mode_changed(idx: int) -> void:
