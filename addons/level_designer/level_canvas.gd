@@ -81,6 +81,7 @@ func _try_append(coord: Vector2i) -> void:
         var last: Vector2i = work.path[work.path.size() - 1]
         if abs(coord.x - last.x) + abs(coord.y - last.y) != 1:
             return
+    work.push_undo(func(): work.path.pop_back())
     work.path.append(coord)
     queue_redraw()
 
@@ -88,11 +89,15 @@ func _annotate(coord: Vector2i) -> void:
     for i in range(work.mechanics.size()):
         var m: MechanicData = work.mechanics[i]
         if m.coord == coord and _matches_mode(m):
+            var captured: MechanicData = m
+            var captured_idx: int = i
+            work.push_undo(func(): work.mechanics.insert(captured_idx, captured))
             work.mechanics.remove_at(i)
             queue_redraw()
             return
     var data: MechanicData = _make_mechanic(coord)
     if data != null:
+        work.push_undo(func(): work.mechanics.erase(data))
         work.mechanics.append(data)
         queue_redraw()
 

@@ -69,3 +69,10 @@ MainView 工具栏加「撤销」按钮 → `canvas.work.undo_last_step()` → `
 
 - [ ] `undo_last_step` pop path 末格 + 删该格机制,GUT 覆盖
 - [ ] undo 按钮手动可用(画错回退,机制连带删)
+
+## 执行中变更(D3 推翻,2026-07-12,用户验证反馈)
+
+D3 原判断「不做栈(YAGNI)」被推翻:
+- **变更**:undo 改为**反向操作栈**——编辑动作(path 追加/机制加/删)执行前 `push_undo(反向 lambda)`,`undo` LIFO 执行,撤销**最新动作**(非删 path 末格)。`WorkLevelResource.push_undo/undo`(去 `undo_last_step`);canvas `_try_append`/`_annotate` 编辑点 push_undo;`clear`/`size`/`goal` 不记 undo。
+- **理由**:用户反馈原 undo(删末格)在标机制后撤销会错删 path 末格而非撤销机制标注;「撤销最新动作」是编辑器标准行为,D3 的 YAGNI 判断在此失误。
+- **实际代码**:`scripts/tool/work_level_resource.gd`(`push_undo`/`undo`/`_undo_stack`)+ `addons/level_designer/level_canvas.gd`(`_try_append`/`_annotate` push_undo)。§3 的 `undo_last_step` 实现已被取代,以实际代码为准。
