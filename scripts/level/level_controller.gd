@@ -4,6 +4,11 @@ extends Node
 @export var level: LevelResource
 @export var cell_size: int = 64
 
+signal won()
+signal back_requested()
+
+var _won: bool = false
+
 @onready var _input_system: InputSystem = $InputSystem
 @onready var _grid_renderer: GridRenderer = $GridRenderer
 @onready var _player_sprite: PlayerSprite = $PlayerSprite
@@ -24,6 +29,7 @@ func _ready() -> void:
     _hud.undo_pressed.connect(_on_undo)
     _hud.reset_pressed.connect(_on_reset)
     _path_state.path_changed.connect(_check_win)
+    _hud.back_pressed.connect(func(): back_requested.emit())
     _check_win([])
 
 func _bind_all() -> void:
@@ -51,6 +57,10 @@ func _on_reset() -> void:
 
 func _check_win(_p: Array) -> void:
     if _level_system.check_win():
+        if not _won:
+            _won = true
+            won.emit()
         _hud.show_win()
     else:
+        _won = false
         _hud.clear_win()

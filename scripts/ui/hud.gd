@@ -3,6 +3,7 @@ extends Control
 
 signal undo_pressed()
 signal reset_pressed()
+signal back_pressed()
 
 var _win_label: Label
 
