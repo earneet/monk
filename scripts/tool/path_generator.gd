@@ -56,3 +56,24 @@ static func _d2xy(n: int, d: int) -> Vector2i:
         t = t >> 2
         s *= 2
     return Vector2i(x, y)
+
+static func generate_heuristic(size: Vector2i) -> Array[Vector2i]:
+    var path: Array[Vector2i] = []
+    var visited: Dictionary = {}
+    _dfs(Vector2i(0, 0), path, visited, size)
+    return path
+
+static func _dfs(coord: Vector2i, path: Array[Vector2i], visited: Dictionary, size: Vector2i) -> bool:
+    path.append(coord)
+    visited[coord] = true
+    if path.size() == size.x * size.y:
+        return true
+    var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
+    for d in dirs:
+        var nb: Vector2i = coord + d
+        if nb.x >= 0 and nb.x < size.x and nb.y >= 0 and nb.y < size.y and not visited.has(nb):
+            if _dfs(nb, path, visited, size):
+                return true
+    path.pop_back()
+    visited.erase(coord)
+    return false
