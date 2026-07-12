@@ -79,6 +79,7 @@ func _build_ui() -> void:
     mode_option.add_item("传送(自动配对)", LevelCanvas.Mode.PORTAL)
     mode_option.add_item("桥", LevelCanvas.Mode.BRIDGE)
     mode_option.add_item("动态水", LevelCanvas.Mode.DWATER)
+    mode_option.add_item("障碍(路径外)", LevelCanvas.Mode.OBSTACLE)
     mode_option.item_selected.connect(_on_mode_changed)
     mech_bar.add_child(mode_option)
     var ll := Label.new()

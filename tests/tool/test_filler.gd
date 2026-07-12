@@ -30,3 +30,10 @@ func test_inner_enclosed_filled_water():
     ]
     var tiles := Filler.fill(_wlr(Vector2i(3, 3), p))
     assert_eq(tiles[1][1], LevelResource.TileType.FLOWING_WATER)
+
+func test_obstacle_override_replaces_default_fill():
+    var p: Array[Vector2i] = [Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)]
+    var w := _wlr(Vector2i(3, 3), p)
+    w.obstacle_overrides[Vector2i(0, 0)] = "FLOWING_WATER"
+    var t := Filler.fill(w)
+    assert_eq(t[0][0], LevelResource.TileType.FLOWING_WATER)
