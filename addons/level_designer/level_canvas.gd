@@ -11,6 +11,8 @@ var mech_lever_ids: Array[String] = []
 var mech_period: int = 4
 var _dragging: bool = false
 
+signal mechanics_changed
+
 const COLOR_EMPTY := Color(0.96, 0.94, 0.90)
 const COLOR_WALL := Color(0.17, 0.17, 0.17)
 const COLOR_WATER := Color(0.35, 0.48, 0.54)
@@ -109,6 +111,7 @@ func _annotate(coord: Vector2i) -> void:
             var captured_idx: int = i
             work.push_undo(func(): work.mechanics.insert(captured_idx, captured))
             work.mechanics.remove_at(i)
+            mechanics_changed.emit()
             queue_redraw()
             return
     var removed: Array = []
@@ -123,6 +126,7 @@ func _annotate(coord: Vector2i) -> void:
     if data != null:
         work.mechanics.append(data)
     work.push_undo(_restore_after_replace.bind(data, removed))
+    mechanics_changed.emit()
     queue_redraw()
 
 func _restore_after_replace(data: MechanicData, removed: Array) -> void:
