@@ -20,6 +20,12 @@ func _ready() -> void:
     reset.pressed.connect(func(): reset_pressed.emit())
     add_child(reset)
 
+    var back := Button.new()
+    back.text = "返回列表"
+    back.position = Vector2(210, 10)
+    back.pressed.connect(func(): back_pressed.emit())
+    add_child(back)
+
     _win_label = Label.new()
     _win_label.text = ""
     _win_label.position = Vector2(10, 50)
