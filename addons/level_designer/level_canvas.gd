@@ -7,7 +7,6 @@ enum Mode { NONE, LEVER, DOOR, PORTAL, BRIDGE, DWATER }
 var work: WorkLevelResource
 var cell_size: int = 48
 var mode: Mode = Mode.NONE
-var mech_id: String = ""
 var mech_lever_ids: Array[String] = []
 var mech_period: int = 4
 
@@ -110,7 +109,7 @@ func _make_mechanic(coord: Vector2i) -> MechanicData:
     match mode:
         Mode.LEVER:
             var d := LeverData.new()
-            d.id = mech_id
+            d.id = _next_lever_id()
             d.coord = coord
             return d
         Mode.DOOR:
@@ -125,7 +124,7 @@ func _make_mechanic(coord: Vector2i) -> MechanicData:
             return d
         Mode.PORTAL:
             var d := PortalData.new()
-            d.pair_id = mech_id
+            d.pair_id = _next_pair_id()
             d.coord = coord
             return d
         Mode.DWATER:
@@ -134,3 +133,25 @@ func _make_mechanic(coord: Vector2i) -> MechanicData:
             d.coord = coord
             return d
     return null
+
+func _next_lever_id() -> String:
+    var max_n := 0
+    for m in work.mechanics:
+        if m is LeverData:
+            var s := (m as LeverData).id
+            if s.begins_with("L"):
+                var n := s.substr(1).to_int()
+                if n > max_n:
+                    max_n = n
+    return "L" + str(max_n + 1)
+
+func _next_pair_id() -> String:
+    var count := 0
+    var last_pair := ""
+    for m in work.mechanics:
+        if m is PortalData:
+            count += 1
+            last_pair = (m as PortalData).pair_id
+    if count % 2 == 0:
+        return "P" + str(count / 2 + 1)
+    return last_pair
