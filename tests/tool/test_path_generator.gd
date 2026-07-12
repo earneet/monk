@@ -71,3 +71,8 @@ func test_random_walk_no_repeat_in_bounds_adjacent():
 func test_random_walk_not_full_coverage():
     var path := PathGenerator.generate_random_walk(Vector2i(6, 6), Vector2i(0, 0), Vector2i(-1, -1))
     assert_true(path.size() < 36)
+
+func test_random_walk_with_end_reaches_end():
+    var path := PathGenerator.generate_random_walk(Vector2i(5, 5), Vector2i(0, 0), Vector2i(4, 4))
+    assert_true(path.size() > 0)
+    assert_eq(path[path.size() - 1], Vector2i(4, 4))

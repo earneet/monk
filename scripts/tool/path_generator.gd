@@ -79,22 +79,41 @@ static func _dfs(coord: Vector2i, path: Array[Vector2i], visited: Dictionary, si
     return false
 
 static func generate_random_walk(size: Vector2i, start: Vector2i, end: Vector2i) -> Array[Vector2i]:
+    if end.x >= 0:
+        var reach_path: Array[Vector2i] = []
+        var visited: Dictionary = {}
+        _dfs_to_end(start, end, reach_path, visited, size)
+        return reach_path
     var path: Array[Vector2i] = [start]
-    var visited: Dictionary = {start: true}
+    var visited2: Dictionary = {start: true}
     var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
     while true:
         var cur: Vector2i = path[path.size() - 1]
-        if end.x >= 0 and cur == end:
-            break
         var candidates: Array[Vector2i] = []
         for d in dirs:
             var nb: Vector2i = cur + d
-            if nb.x >= 0 and nb.x < size.x and nb.y >= 0 and nb.y < size.y and not visited.has(nb):
+            if nb.x >= 0 and nb.x < size.x and nb.y >= 0 and nb.y < size.y and not visited2.has(nb):
                 candidates.append(nb)
         if candidates.is_empty():
             break
         candidates.shuffle()
         var nxt: Vector2i = candidates[0]
         path.append(nxt)
-        visited[nxt] = true
+        visited2[nxt] = true
     return path
+
+static func _dfs_to_end(coord: Vector2i, end: Vector2i, path: Array[Vector2i], visited: Dictionary, size: Vector2i) -> bool:
+    path.append(coord)
+    visited[coord] = true
+    if coord == end:
+        return true
+    var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+    dirs.shuffle()
+    for d in dirs:
+        var nb: Vector2i = coord + d
+        if nb.x >= 0 and nb.x < size.x and nb.y >= 0 and nb.y < size.y and not visited.has(nb):
+            if _dfs_to_end(nb, end, path, visited, size):
+                return true
+    path.pop_back()
+    visited.erase(coord)
+    return false
