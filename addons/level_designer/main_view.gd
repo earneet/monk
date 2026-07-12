@@ -59,6 +59,10 @@ func _build_ui() -> void:
     clear_btn.text = "清空路径"
     clear_btn.pressed.connect(_on_clear)
     toolbar.add_child(clear_btn)
+    var undo_btn := Button.new()
+    undo_btn.text = "撤销"
+    undo_btn.pressed.connect(_on_undo)
+    toolbar.add_child(undo_btn)
     var export_btn := Button.new()
     export_btn.text = "导出 .tres"
     export_btn.pressed.connect(_on_export)
@@ -115,6 +119,10 @@ func _on_goal_toggled(p: bool) -> void:
 
 func _on_clear() -> void:
     work.path = []
+    canvas.queue_redraw()
+
+func _on_undo() -> void:
+    canvas.work.undo_last_step()
     canvas.queue_redraw()
 
 func _on_mode_changed(idx: int) -> void:
