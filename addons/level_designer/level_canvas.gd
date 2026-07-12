@@ -111,11 +111,25 @@ func _annotate(coord: Vector2i) -> void:
             work.mechanics.remove_at(i)
             queue_redraw()
             return
+    var removed: Array = []
+    var j: int = 0
+    while j < work.mechanics.size():
+        if work.mechanics[j].coord == coord:
+            removed.append(work.mechanics[j])
+            work.mechanics.remove_at(j)
+        else:
+            j += 1
     var data: MechanicData = _make_mechanic(coord)
     if data != null:
-        work.push_undo(func(): work.mechanics.erase(data))
         work.mechanics.append(data)
-        queue_redraw()
+    work.push_undo(_restore_after_replace.bind(data, removed))
+    queue_redraw()
+
+func _restore_after_replace(data: MechanicData, removed: Array) -> void:
+    if data != null:
+        work.mechanics.erase(data)
+    for old in removed:
+        work.mechanics.append(old)
 
 func _matches_mode(m: MechanicData) -> bool:
     match mode:
