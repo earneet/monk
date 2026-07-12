@@ -101,6 +101,7 @@ func _build_ui() -> void:
     canvas.work = work
     canvas.cell_size = 48
     canvas.custom_minimum_size = Vector2(work.size.x * canvas.cell_size, work.size.y * canvas.cell_size)
+    canvas.mechanics_changed.connect(_refresh_lever_options)
     vbox.add_child(canvas)
     _on_mode_changed(0)
 
@@ -124,6 +125,7 @@ func _on_clear() -> void:
 
 func _on_undo() -> void:
     canvas.work.undo()
+    _refresh_lever_options()
     canvas.queue_redraw()
 
 func _on_mode_changed(idx: int) -> void:

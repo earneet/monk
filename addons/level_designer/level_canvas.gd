@@ -9,6 +9,9 @@ var cell_size: int = 48
 var mode: Mode = Mode.NONE
 var mech_lever_ids: Array[String] = []
 var mech_period: int = 4
+var _dragging: bool = false
+
+signal mechanics_changed
 
 const COLOR_EMPTY := Color(0.96, 0.94, 0.90)
 const COLOR_WALL := Color(0.17, 0.17, 0.17)
@@ -64,9 +67,21 @@ func _draw() -> void:
 func _gui_input(event: InputEvent) -> void:
     if work == null:
         return
-    if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
-        return
-    var coord := Vector2i(int(event.position.x / cell_size), int(event.position.y / cell_size))
+    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+        var coord := Vector2i(int(event.position.x / cell_size), int(event.position.y / cell_size))
+        if event.pressed:
+            _dragging = true
+            _handle_click(coord)
+        else:
+            _dragging = false
+    elif event is InputEventMouseMotion and _dragging:
+        var coord := Vector2i(int(event.position.x / cell_size), int(event.position.y / cell_size))
+        if coord.x < 0 or coord.x >= work.size.x or coord.y < 0 or coord.y >= work.size.y:
+            return
+        if mode == Mode.NONE:
+            _try_append(coord)
+
+func _handle_click(coord: Vector2i) -> void:
     if coord.x < 0 or coord.x >= work.size.x or coord.y < 0 or coord.y >= work.size.y:
         return
     if mode == Mode.NONE:
@@ -96,13 +111,29 @@ func _annotate(coord: Vector2i) -> void:
             var captured_idx: int = i
             work.push_undo(func(): work.mechanics.insert(captured_idx, captured))
             work.mechanics.remove_at(i)
+            mechanics_changed.emit()
             queue_redraw()
             return
+    var removed: Array = []
+    var j: int = 0
+    while j < work.mechanics.size():
+        if work.mechanics[j].coord == coord:
+            removed.append(work.mechanics[j])
+            work.mechanics.remove_at(j)
+        else:
+            j += 1
     var data: MechanicData = _make_mechanic(coord)
     if data != null:
-        work.push_undo(func(): work.mechanics.erase(data))
         work.mechanics.append(data)
-        queue_redraw()
+    work.push_undo(_restore_after_replace.bind(data, removed))
+    mechanics_changed.emit()
+    queue_redraw()
+
+func _restore_after_replace(data: MechanicData, removed: Array) -> void:
+    if data != null:
+        work.mechanics.erase(data)
+    for old in removed:
+        work.mechanics.append(old)
 
 func _matches_mode(m: MechanicData) -> bool:
     match mode:
