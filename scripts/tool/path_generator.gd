@@ -77,3 +77,24 @@ static func _dfs(coord: Vector2i, path: Array[Vector2i], visited: Dictionary, si
     path.pop_back()
     visited.erase(coord)
     return false
+
+static func generate_random_walk(size: Vector2i, start: Vector2i, end: Vector2i) -> Array[Vector2i]:
+    var path: Array[Vector2i] = [start]
+    var visited: Dictionary = {start: true}
+    var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+    while true:
+        var cur: Vector2i = path[path.size() - 1]
+        if end.x >= 0 and cur == end:
+            break
+        var candidates: Array[Vector2i] = []
+        for d in dirs:
+            var nb: Vector2i = cur + d
+            if nb.x >= 0 and nb.x < size.x and nb.y >= 0 and nb.y < size.y and not visited.has(nb):
+                candidates.append(nb)
+        if candidates.is_empty():
+            break
+        candidates.shuffle()
+        var nxt: Vector2i = candidates[0]
+        path.append(nxt)
+        visited[nxt] = true
+    return path
