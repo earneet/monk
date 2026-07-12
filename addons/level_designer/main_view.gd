@@ -10,6 +10,7 @@ var goal_check: CheckBox
 var mode_option: OptionButton
 var lever_option: OptionButton
 var period_spin: SpinBox
+var algo_option: OptionButton
 
 func _ready() -> void:
     if work == null:
@@ -67,6 +68,18 @@ func _build_ui() -> void:
     export_btn.text = "导出 .tres"
     export_btn.pressed.connect(_on_export)
     toolbar.add_child(export_btn)
+    var gen_label := Label.new()
+    gen_label.text = "生成:"
+    toolbar.add_child(gen_label)
+    algo_option = OptionButton.new()
+    algo_option.add_item("螺旋")
+    algo_option.add_item("Hilbert")
+    algo_option.add_item("启发式")
+    toolbar.add_child(algo_option)
+    var gen_btn := Button.new()
+    gen_btn.text = "生成路径"
+    gen_btn.pressed.connect(_on_generate)
+    toolbar.add_child(gen_btn)
     var mech_bar := HBoxContainer.new()
     vbox.add_child(mech_bar)
     var ml := Label.new()
@@ -166,3 +179,19 @@ func _on_export() -> void:
             print("[LevelDesigner] 数据完整性警告(运行时 validate): ", data_errs)
     else:
         print("[LevelDesigner] 导出失败: ", err)
+
+func _on_generate() -> void:
+    var size: Vector2i = work.size
+    var path: Array[Vector2i] = []
+    match algo_option.selected:
+        0: path = PathGenerator.generate_spiral(size)
+        1: path = PathGenerator.generate_hilbert(size)
+        2: path = PathGenerator.generate_heuristic(size)
+    if path.is_empty():
+        print("[LevelDesigner] 生成失败,保留原路径")
+        return
+    var old_path: Array[Vector2i] = work.path.duplicate()
+    work.push_undo(func(): work.path = old_path)
+    work.path = path
+    _refresh_lever_options()
+    canvas.queue_redraw()
