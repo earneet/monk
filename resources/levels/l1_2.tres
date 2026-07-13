@@ -13,5 +13,5 @@ difficulty = 2
 [resource]
 script = ExtResource("3_ymgv8")
 size = Vector2i(5, 5)
-tiles = [Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 2, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([1, 0, 0, 0, 1]), Array[int]([1, 0, 0, 0, 1])]
+tiles = [Array[int]([0, 1, 0, 0, 1]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 1, 1]), Array[int]([0, 0, 0, 1, 1])]
 meta = SubResource("Resource_3mcai")
