@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="LevelResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/mechanic_data.gd" id="1_ww6s3"]
+[ext_resource type="Script" path="res://scripts/mechanics/lever_data.gd" id="2_8410i"]
+[ext_resource type="Script" path="res://scripts/mechanics/door_data.gd" id="3_qwn8b"]
+[ext_resource type="Script" path="res://scripts/level/level_meta.gd" id="4_r24m8"]
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="5_bpuup"]
+
+[sub_resource type="Resource" id="Resource_eea7i"]
+script = ExtResource("2_8410i")
+id = "lv1"
+coord = Vector2i(3, 5)
+
+[sub_resource type="Resource" id="Resource_3vopc"]
+script = ExtResource("3_qwn8b")
+lever_ids = Array[String](["lv1"])
+coord = Vector2i(1, 3)
+
+[sub_resource type="Resource" id="Resource_r2cg1"]
+script = ExtResource("4_r24m8")
+id = "2-1"
+display_name = "叩门"
+difficulty = 6
+
+[resource]
+script = ExtResource("5_bpuup")
+size = Vector2i(6, 6)
+tiles = [Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0])]
+mechanics = Array[ExtResource("1_ww6s3")]([SubResource("Resource_eea7i"), SubResource("Resource_3vopc")])
+meta = SubResource("Resource_r2cg1")

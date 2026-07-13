@@ -2,6 +2,7 @@ extends GutTest
 
 func test_ready_safe_without_chapter_files():
     var boot := Boot.new()
+    boot.chapter_paths = ["res://resources/chapters/__nonexistent__.tres"]
     add_child(boot)
     assert_not_null(boot._progression)
     assert_eq(boot._chapters, [])

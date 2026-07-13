@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="LevelResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/mechanic_data.gd" id="1_vfx1v"]
+[ext_resource type="Script" path="res://scripts/level/level_meta.gd" id="2_pe42h"]
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="3_fsdwx"]
+
+[sub_resource type="Resource" id="Resource_ulapw"]
+script = ExtResource("2_pe42h")
+id = "1-3"
+display_name = "曲径"
+difficulty = 3
+
+[resource]
+script = ExtResource("3_fsdwx")
+size = Vector2i(5, 5)
+tiles = [Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([1, 0, 0, 0, 0]), Array[int]([1, 0, 0, 0, 0])]
+meta = SubResource("Resource_ulapw")

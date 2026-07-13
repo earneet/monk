@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="LevelResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/mechanic_data.gd" id="1_urvxk"]
+[ext_resource type="Script" path="res://scripts/level/level_meta.gd" id="2_okwx0"]
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="3_cfpk5"]
+
+[sub_resource type="Resource" id="Resource_wwhm3"]
+script = ExtResource("2_okwx0")
+id = "1-5"
+display_name = "前院终"
+difficulty = 5
+
+[resource]
+script = ExtResource("3_cfpk5")
+size = Vector2i(6, 6)
+tiles = [Array[int]([0, 1, 0, 0, 0, 0]), Array[int]([0, 0, 0, 2, 2, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 2, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 1, 0, 0, 0])]
+goal = Vector2i(5, 5)
+meta = SubResource("Resource_wwhm3")
