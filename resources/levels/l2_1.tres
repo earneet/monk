@@ -9,12 +9,12 @@
 [sub_resource type="Resource" id="Resource_eea7i"]
 script = ExtResource("2_8410i")
 id = "lv1"
-coord = Vector2i(3, 5)
+coord = Vector2i(5, 3)
 
 [sub_resource type="Resource" id="Resource_3vopc"]
 script = ExtResource("3_qwn8b")
 lever_ids = Array[String](["lv1"])
-coord = Vector2i(1, 3)
+coord = Vector2i(2, 4)
 
 [sub_resource type="Resource" id="Resource_r2cg1"]
 script = ExtResource("4_r24m8")
@@ -25,6 +25,6 @@ difficulty = 6
 [resource]
 script = ExtResource("5_bpuup")
 size = Vector2i(6, 6)
-tiles = [Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0])]
+tiles = [Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([1, 1, 1, 1, 1, 0]), Array[int]([1, 1, 1, 1, 1, 0]), Array[int]([0, 0, 0, 0, 1, 0]), Array[int]([0, 0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0, 0])]
 mechanics = Array[ExtResource("1_ww6s3")]([SubResource("Resource_eea7i"), SubResource("Resource_3vopc")])
 meta = SubResource("Resource_r2cg1")

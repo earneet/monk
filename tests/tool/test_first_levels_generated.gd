@@ -45,3 +45,24 @@ func test_mechanic_levels_have_lever_and_door() -> void:
                 doors += 1
         assert_eq(doors, expected_doors[i], "%s 门数" % door_files[i])
         assert_eq(levers, expected_doors[i], "%s 机关数" % door_files[i])
+
+
+func test_door_levels_have_obstacles() -> void:
+    var door_files := ["l2_1", "l2_2", "l2_3"]
+    for f in door_files:
+        var lr := load("res://resources/levels/%s.tres" % f) as LevelResource
+        assert_not_null(lr, "%s 应存在" % f)
+        var has_obstacle := false
+        for y in range(lr.size.y):
+            for x in range(lr.size.x):
+                if lr.tiles[y][x] != LevelResource.TileType.EMPTY:
+                    has_obstacle = true
+                    break
+            if has_obstacle:
+                break
+        assert_true(has_obstacle, "%s 应有障碍(非全空)" % f)
+
+func test_l2_3_has_goal() -> void:
+    var lr := load("res://resources/levels/l2_3.tres") as LevelResource
+    assert_not_null(lr, "l2_3 应存在")
+    assert_eq(lr.goal, Vector2i(6, 6), "l2_3 应指定终点 (6,6)")

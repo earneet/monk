@@ -42,9 +42,9 @@ func _level_def() -> Array:
         _def("l1_3", "1-3", "曲径", 3, Vector2i(5, 5), Vector2i(0, 0), Vector2i(-1, -1), "walk", []),
         _def("l1_4", "1-4", "溪畔", 4, Vector2i(6, 6), Vector2i(0, 0), Vector2i(-1, -1), "walk", []),
         _def("l1_5", "1-5", "前院终", 5, Vector2i(6, 6), Vector2i(0, 0), Vector2i(5, 5), "walk", []),
-        _def("l2_1", "2-1", "叩门", 6, Vector2i(6, 6), Vector2i(0, 0), Vector2i(-1, -1), "heuristic", ["lv1"]),
-        _def("l2_2", "2-2", "重门", 7, Vector2i(6, 6), Vector2i(0, 0), Vector2i(-1, -1), "heuristic", ["lv1", "lv2"]),
-        _def("l2_3", "2-3", "后山终", 8, Vector2i(7, 7), Vector2i(0, 0), Vector2i(-1, -1), "heuristic", ["lv1"]),
+        _def("l2_1", "2-1", "叩门", 6, Vector2i(6, 6), Vector2i(0, 0), Vector2i(-1, -1), "walk", ["lv1"]),
+        _def("l2_2", "2-2", "重门", 7, Vector2i(6, 6), Vector2i(0, 0), Vector2i(-1, -1), "walk", ["lv1", "lv2"]),
+        _def("l2_3", "2-3", "后山终", 8, Vector2i(7, 7), Vector2i(0, 0), Vector2i(6, 6), "walk", ["lv1"]),
     ]
 
 
@@ -69,6 +69,8 @@ func _build_level(def: Dictionary) -> LevelResource:
     wlr.meta = _make_meta(meta_id, def["display"], def["diff"])
     wlr.chapter_id = "ch1" if meta_id.begins_with("1") else "ch2"
     wlr.path = _gen_path(def)
+    if meta_id == "1-3":
+        _add_bottleneck(wlr)
     var goal: Vector2i = def["goal"]
     wlr.has_goal = goal.x >= 0
     var lever_ids: Array = def["lever_ids"]
@@ -95,7 +97,23 @@ func _gen_path(def: Dictionary) -> Array[Vector2i]:
     var start: Vector2i = def["start"]
     var goal: Vector2i = def["goal"]
     var end := goal if goal.x >= 0 else Vector2i(-1, -1)
-    return PathGenerator.generate_random_walk(size, start, end)
+    var lever_ids: Array = def["lever_ids"]
+    if lever_ids.is_empty():
+        return PathGenerator.generate_random_walk(size, start, end)
+    var min_len: int = 15 if size.x >= 7 else 12
+    return _gen_path_with_min(size, start, end, min_len)
+
+
+func _gen_path_with_min(size: Vector2i, start: Vector2i, end: Vector2i, min_len: int, max_tries: int = 20) -> Array[Vector2i]:
+    var best: Array[Vector2i] = []
+    for i in range(max_tries):
+        var p := PathGenerator.generate_random_walk(size, start, end)
+        if p.size() > best.size():
+            best = p
+        if p.size() >= min_len:
+            return p
+    push_warning("random_walk 未达 min_len=%d,用最长 %d" % [min_len, best.size()])
+    return best
 
 
 func _make_meta(meta_id: String, display: String, diff: int) -> LevelMeta:
@@ -122,6 +140,21 @@ func _make_lever_doors(lever_ids: Array, path: Array[Vector2i]) -> Array[Mechani
         mechanics.append(lever)
         mechanics.append(door)
     return mechanics
+
+
+func _add_bottleneck(wlr: WorkLevelResource) -> void:
+    var path_set: Dictionary = {}
+    for c in wlr.path:
+        path_set[c] = true
+    var added := 0
+    for y in range(1, wlr.size.y - 1):
+        for x in range(1, wlr.size.x - 1):
+            var coord := Vector2i(x, y)
+            if not path_set.has(coord):
+                wlr.obstacle_overrides[coord] = "WALL"
+                added += 1
+                if added >= 2:
+                    return
 
 
 func _save_chapter(ch_id: String, display: String, level_files: Array, file_name: String) -> bool:

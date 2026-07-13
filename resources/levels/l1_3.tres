@@ -13,5 +13,5 @@ difficulty = 3
 [resource]
 script = ExtResource("3_fsdwx")
 size = Vector2i(5, 5)
-tiles = [Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([1, 0, 0, 0, 0]), Array[int]([1, 0, 0, 0, 0])]
+tiles = [Array[int]([0, 0, 1, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 1]), Array[int]([1, 1, 1, 1, 1])]
 meta = SubResource("Resource_ulapw")
