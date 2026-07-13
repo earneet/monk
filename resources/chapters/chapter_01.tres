@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ChapterResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="1_wuv4x"]
+[ext_resource type="Resource" path="res://resources/levels/l1_1.tres" id="2_gwcet"]
+[ext_resource type="Resource" path="res://resources/levels/l1_2.tres" id="3_ba2tk"]
+[ext_resource type="Resource" path="res://resources/levels/l1_3.tres" id="4_bsp0i"]
+[ext_resource type="Resource" path="res://resources/levels/l1_4.tres" id="5_u1nfk"]
+[ext_resource type="Resource" path="res://resources/levels/l1_5.tres" id="6_4aypw"]
+[ext_resource type="Script" path="res://scripts/level/chapter_resource.gd" id="7_ijlbd"]
+
+[resource]
+script = ExtResource("7_ijlbd")
+id = "ch1"
+display_name = "前院"
+main_levels = Array[ExtResource("1_wuv4x")]([ExtResource("2_gwcet"), ExtResource("3_ba2tk"), ExtResource("4_bsp0i"), ExtResource("5_u1nfk"), ExtResource("6_4aypw")])

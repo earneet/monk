@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="LevelResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/mechanic_data.gd" id="1_uivxs"]
+[ext_resource type="Script" path="res://scripts/level/level_meta.gd" id="2_rwsfp"]
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="3_nj3tq"]
+
+[sub_resource type="Resource" id="Resource_ev0uo"]
+script = ExtResource("2_rwsfp")
+id = "1-1"
+display_name = "初扫"
+difficulty = 1
+
+[resource]
+script = ExtResource("3_nj3tq")
+size = Vector2i(5, 5)
+tiles = [Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0]), Array[int]([0, 0, 0, 0, 0])]
+meta = SubResource("Resource_ev0uo")

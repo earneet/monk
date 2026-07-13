@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChapterResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/level/level_resource.gd" id="1_yogrv"]
+[ext_resource type="Resource" path="res://resources/levels/l2_1.tres" id="2_582dr"]
+[ext_resource type="Resource" path="res://resources/levels/l2_2.tres" id="3_8f08t"]
+[ext_resource type="Resource" path="res://resources/levels/l2_3.tres" id="4_c5fg6"]
+[ext_resource type="Script" path="res://scripts/level/chapter_resource.gd" id="5_cn6xa"]
+
+[resource]
+script = ExtResource("5_cn6xa")
+id = "ch2"
+display_name = "后山"
+main_levels = Array[ExtResource("1_yogrv")]([ExtResource("2_582dr"), ExtResource("3_8f08t"), ExtResource("4_c5fg6")])
