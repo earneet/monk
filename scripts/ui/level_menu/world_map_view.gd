@@ -7,12 +7,14 @@ var _scroll: ScrollContainer
 var _content: Control
 var _entries: Array = []
 var _chapters: Array = []
+var _chapter_id_to_pos: Dictionary = {}
 
 func build(layout: WorldMapLayout, chapters: Array, progression: LevelProgression) -> void:
     for c in get_children():
         c.queue_free()
     _entries = layout.chapters
     _chapters = chapters
+    _chapter_id_to_pos.clear()
     _scroll = ScrollContainer.new()
     _scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
     add_child(_scroll)
@@ -28,6 +30,7 @@ func build(layout: WorldMapLayout, chapters: Array, progression: LevelProgressio
         var first_unlocked: bool = ch != null and ch.main_levels.size() > 0 and (ch.main_levels[0] as LevelResource).meta.id in unlocked
         var ch_highlighted: bool = ch != null and highlighted != "" and _chapter_has(ch, highlighted)
         _content.add_child(_make_island(entry, ch, first_unlocked, ch_highlighted))
+        _chapter_id_to_pos[entry.chapter_id] = entry.position
     var vsb := _scroll.get_v_scroll_bar()
     var hsb := _scroll.get_h_scroll_bar()
     if not vsb.value_changed.is_connected(_on_scroll_changed):
@@ -83,10 +86,17 @@ func _on_scroll_changed() -> void:
     queue_redraw()
 
 func _draw() -> void:
-    if _entries.size() < 2 or _scroll == null:
+    if _scroll == null:
         return
     var offset := Vector2(-_scroll.scroll_horizontal, -_scroll.scroll_vertical)
-    for i in range(_entries.size() - 1):
-        var a: Vector2 = (_entries[i] as ChapterMapEntry).position + offset
-        var b: Vector2 = (_entries[i + 1] as ChapterMapEntry).position + offset
-        draw_dashed_line(a, b, Color(0.5, 0.45, 0.3), 2.0, 8.0)
+    for i in range(_entries.size()):
+        var from: ChapterMapEntry = _entries[i] as ChapterMapEntry
+        var targets: Array[String] = from.next_ids if from.next_ids.size() > 0 else _default_next_chapter(i)
+        for tid in targets:
+            if _chapter_id_to_pos.has(tid):
+                draw_dashed_line(from.position + offset, (_chapter_id_to_pos[tid] as Vector2) + offset, Color(0.5, 0.45, 0.3), 2.0, 8.0)
+
+func _default_next_chapter(i: int) -> Array[String]:
+    if i + 1 < _entries.size():
+        return [(_entries[i + 1] as ChapterMapEntry).chapter_id]
+    return []

@@ -7,6 +7,8 @@ signal back_to_world()
 var _back_button: Button
 var _theme_color: Color = Color.GREEN
 var _positions: Array[Vector2] = []
+var _entries: Array = []
+var _id_to_pos: Dictionary = {}
 var _chapter: ChapterResource
 var _entry_count: int = 0
 
@@ -17,6 +19,8 @@ func build(entries: Array, chapter: ChapterResource, progression: LevelProgressi
     _entry_count = entries.size()
     _theme_color = theme_color
     _positions.clear()
+    _entries = entries
+    _id_to_pos.clear()
     var unlocked := progression.unlocked_ids()
     var highlighted := progression.highlighted_id()
     _back_button = Button.new()
@@ -29,6 +33,7 @@ func build(entries: Array, chapter: ChapterResource, progression: LevelProgressi
         var is_unlocked: bool = entry.level_id in unlocked
         add_child(_make_node(entry, is_unlocked, entry.level_id == highlighted, progression.is_completed(entry.level_id), i))
         _positions.append(entry.position)
+        _id_to_pos[entry.level_id] = entry.position
     queue_redraw()
 
 func select_level(index: int) -> void:
@@ -64,7 +69,14 @@ func _make_node(entry: LevelMapEntry, unlocked: bool, highlighted: bool, complet
     return panel
 
 func _draw() -> void:
-    if _positions.size() < 2:
-        return
-    for i in range(_positions.size() - 1):
-        draw_dashed_line(_positions[i] + Vector2(24, 24), _positions[i + 1] + Vector2(24, 24), _theme_color, 2.0, 6.0)
+    for i in range(_entries.size()):
+        var from: LevelMapEntry = _entries[i] as LevelMapEntry
+        var targets: Array[String] = from.next_ids if from.next_ids.size() > 0 else _default_next_level(i)
+        for tid in targets:
+            if _id_to_pos.has(tid):
+                draw_dashed_line(from.position + Vector2(24, 24), (_id_to_pos[tid] as Vector2) + Vector2(24, 24), _theme_color, 2.0, 6.0)
+
+func _default_next_level(i: int) -> Array[String]:
+    if i + 1 < _entries.size():
+        return [(_entries[i + 1] as LevelMapEntry).level_id]
+    return []
