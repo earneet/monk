@@ -96,3 +96,34 @@ func test_world_map_emits_chapter_selected():
     view.chapter_selected.connect(func(cid, anchor): captured_id[0] = cid)
     view.select_island(1)
     assert_eq(captured_id[0], "ch2")
+
+func test_menu_setup_builds_world():
+    var menu := LevelMenu.new()
+    add_child_autofree(menu)
+    var ch1 := _chapter("ch1", ["1-1", "1-2"])
+    var layout := _layout([ch1])
+    menu.setup([ch1], layout, _prog([ch1]))
+    assert_eq(menu.current_state(), LevelMenu.State.WORLD)
+
+func test_menu_enter_chapter_then_choose_level():
+    var menu := LevelMenu.new()
+    add_child_autofree(menu)
+    var ch1 := _chapter("ch1", ["1-1", "1-2"])
+    var layout := _layout([ch1])
+    menu.setup([ch1], layout, _prog([ch1]))
+    menu.enter_chapter("ch1", Vector2(200, 150))
+    assert_eq(menu.current_state(), LevelMenu.State.CHAPTER)
+    var captured: Array = []
+    menu.level_chosen.connect(func(l): captured.append(l))
+    menu.choose_level("1-1")
+    assert_eq(captured.size(), 1)
+
+func test_menu_back_to_world():
+    var menu := LevelMenu.new()
+    add_child_autofree(menu)
+    var ch1 := _chapter("ch1", ["1-1"])
+    var layout := _layout([ch1])
+    menu.setup([ch1], layout, _prog([ch1]))
+    menu.enter_chapter("ch1", Vector2(200, 150))
+    menu.back_to_world_requested()
+    assert_eq(menu.current_state(), LevelMenu.State.WORLD)
