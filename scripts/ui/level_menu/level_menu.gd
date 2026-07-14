@@ -51,7 +51,7 @@ func enter_chapter(chapter_id: String, anchor: Vector2) -> void:
     var ch := _find_chapter(chapter_id)
     if entry == null or ch == null:
         return
-    _path_view.build(entry.levels, ch, _progression, entry.theme_color)
+    _path_view.build(entry.levels, ch, _progression, entry.theme_color, entry.path_size)
     _play_enter_tween(anchor)
 
 func choose_level(level_id: String) -> void:
@@ -73,7 +73,7 @@ func refresh() -> void:
     var entry := _find_entry(_current_chapter_id)
     var ch := _find_chapter(_current_chapter_id)
     if entry != null and ch != null:
-        _path_view.build(entry.levels, ch, _progression, entry.theme_color)
+        _path_view.build(entry.levels, ch, _progression, entry.theme_color, entry.path_size)
 
 func _on_chapter_selected(chapter_id: String, anchor: Vector2) -> void:
     enter_chapter(chapter_id, anchor)
