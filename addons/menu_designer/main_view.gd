@@ -28,6 +28,14 @@ func _build_ui() -> void:
     save_btn.text = "保存"
     save_btn.pressed.connect(_on_save)
     toolbar.add_child(save_btn)
+    var add_btn := Button.new()
+    add_btn.text = "添加节点"
+    add_btn.pressed.connect(_on_add_node)
+    toolbar.add_child(add_btn)
+    var del_btn := Button.new()
+    del_btn.text = "删除末节点"
+    del_btn.pressed.connect(_on_delete_node)
+    toolbar.add_child(del_btn)
     _mode_option = OptionButton.new()
     _mode_option.item_selected.connect(_on_mode_changed)
     toolbar.add_child(_mode_option)
@@ -97,3 +105,69 @@ func _on_save() -> void:
         print("[MenuDesigner] 已保存: ", LAYOUT_PATH)
     else:
         print("[MenuDesigner] 保存失败: ", err)
+
+func _on_add_node() -> void:
+    if _layout == null:
+        return
+    if _mode_option.selected <= 0:
+        _add_island()
+    else:
+        _add_level(_mode_option.selected - 1)
+    _refresh_mode_option()
+    _apply_canvas()
+
+func _on_delete_node() -> void:
+    if _layout == null or _mode_option.selected < 0:
+        return
+    if _mode_option.selected <= 0:
+        if _layout.chapters.size() > 0:
+            _layout.chapters.remove_at(_layout.chapters.size() - 1)
+    else:
+        var ce := _layout.chapters[_mode_option.selected - 1] as ChapterMapEntry
+        if ce.levels.size() > 0:
+            ce.levels.remove_at(ce.levels.size() - 1)
+    _refresh_mode_option()
+    _apply_canvas()
+
+func _add_island() -> void:
+    for ch in _chapters:
+        var cid: String = (ch as ChapterResource).id
+        if not _has_entry(cid):
+            var entry := ChapterMapEntry.new()
+            entry.chapter_id = cid
+            entry.position = Vector2(200, 200 + _layout.chapters.size() * 120)
+            entry.theme_color = Color(0.42, 0.56, 0.35)
+            entry.icon = "🏯"
+            entry.path_size = Vector2(1152, 648)
+            _layout.chapters.append(entry)
+            print("[MenuDesigner] 添加岛屿: ", cid)
+            return
+    print("[MenuDesigner] 无可添加章节(所有章节已布局)")
+
+func _add_level(chapter_index: int) -> void:
+    var ce := _layout.chapters[chapter_index] as ChapterMapEntry
+    var ch := _find_chapter(ce.chapter_id)
+    if ch == null:
+        return
+    for lvl in ch.main_levels:
+        var lid: String = (lvl as LevelResource).meta.id
+        if not _has_level_entry(ce, lid):
+            var entry := LevelMapEntry.new()
+            entry.level_id = lid
+            entry.position = Vector2(200, 100 + ce.levels.size() * 100)
+            ce.levels.append(entry)
+            print("[MenuDesigner] 添加关卡: ", lid)
+            return
+    print("[MenuDesigner] 无可添加关卡(该章节所有关卡已布局)")
+
+func _has_entry(cid: String) -> bool:
+    for e in _layout.chapters:
+        if (e as ChapterMapEntry).chapter_id == cid:
+            return true
+    return false
+
+func _has_level_entry(ce: ChapterMapEntry, lid: String) -> bool:
+    for le in ce.levels:
+        if (le as LevelMapEntry).level_id == lid:
+            return true
+    return false
