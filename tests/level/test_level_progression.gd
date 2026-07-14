@@ -55,3 +55,25 @@ func test_empty_chapters_safe():
     var prog := LevelProgression.new([])
     assert_eq(prog.unlocked_ids(), [])
     assert_eq(prog.highlighted_id(), "")
+
+func test_unlock_branch_via_next_ids():
+    var ch1 := _chapter("ch1", ["1-1", "1-2", "1-3"])
+    var next_map := {"1-1": ["1-2", "1-3"]}
+    var prog := LevelProgression.new([ch1], ["1-1"], next_map)
+    var unlocked := prog.unlocked_ids()
+    assert_true("1-1" in unlocked)
+    assert_true("1-2" in unlocked)
+    assert_true("1-3" in unlocked)
+
+func test_next_ids_empty_defaults_to_sequence_next():
+    var ch1 := _chapter("ch1", ["1-1", "1-2", "1-3"])
+    var prog := LevelProgression.new([ch1], ["1-1"], {})
+    assert_eq(prog.unlocked_ids(), ["1-1", "1-2"])
+
+func test_next_ids_overrides_default():
+    var ch1 := _chapter("ch1", ["1-1", "1-2", "1-3"])
+    var next_map := {"1-1": ["1-3"]}
+    var prog := LevelProgression.new([ch1], ["1-1"], next_map)
+    var unlocked := prog.unlocked_ids()
+    assert_true("1-3" in unlocked)
+    assert_false("1-2" in unlocked)
