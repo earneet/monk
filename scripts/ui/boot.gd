@@ -17,8 +17,9 @@ var _level_instance: Node
 
 func _ready() -> void:
     _load_chapters()
-    _progression = LevelProgression.new(_chapters)
-    _build_menu()
+    var layout := _load_layout()
+    _progression = LevelProgression.new(_chapters, [], _build_next_map(layout))
+    _build_menu(layout)
 
 func _load_chapters() -> void:
     _chapters = []
@@ -28,10 +29,24 @@ func _load_chapters() -> void:
             if ch != null:
                 _chapters.append(ch)
 
-func _build_menu() -> void:
-    var layout: WorldMapLayout = null
+func _load_layout() -> WorldMapLayout:
     if ResourceLoader.exists(layout_path):
-        layout = load(layout_path) as WorldMapLayout
+        return load(layout_path) as WorldMapLayout
+    return null
+
+func _build_next_map(layout: WorldMapLayout) -> Dictionary:
+    var next_map := {}
+    if layout == null:
+        return next_map
+    for ch_entry in layout.chapters:
+        var ce: ChapterMapEntry = ch_entry as ChapterMapEntry
+        for le in ce.levels:
+            var lme: LevelMapEntry = le as LevelMapEntry
+            if lme.next_ids.size() > 0:
+                next_map[lme.level_id] = lme.next_ids
+    return next_map
+
+func _build_menu(layout: WorldMapLayout) -> void:
     if layout == null:
         return
     _level_menu = LevelMenuScene.instantiate()
