@@ -52,3 +52,47 @@ func test_chapter_path_emits_back():
     view.back_to_world.connect(func(): emitted[0] = true)
     view.request_back()
     assert_true(emitted[0])
+
+func _layout(chapters: Array) -> WorldMapLayout:
+    var layout := WorldMapLayout.new()
+    layout.canvas_size = Vector2(400, 800)
+    var entries: Array[ChapterMapEntry] = []
+    var i := 0
+    for ch in chapters:
+        var ce := ChapterMapEntry.new()
+        ce.chapter_id = (ch as ChapterResource).id
+        ce.position = Vector2(200, 150 + i * 250)
+        ce.theme_color = Color.GREEN
+        ce.icon = "🏯"
+        ce.path_size = Vector2(400, 600)
+        for lvl in (ch as ChapterResource).main_levels:
+            var le := LevelMapEntry.new()
+            le.level_id = (lvl as LevelResource).meta.id
+            le.position = Vector2(50, 50)
+            ce.levels.append(le)
+        entries.append(ce)
+        i += 1
+    layout.chapters = entries
+    return layout
+
+func test_world_map_builds_one_island_per_chapter():
+    var view := WorldMapView.new()
+    add_child_autofree(view)
+    var ch1 := _chapter("ch1", ["1-1"])
+    var ch2 := _chapter("ch2", ["2-1"])
+    var layout := _layout([ch1, ch2])
+    view.build(layout, [ch1, ch2], _prog([ch1, ch2]))
+    var islands := view.find_children("*", "Panel", true, false)
+    assert_eq(islands.size(), 2)
+
+func test_world_map_emits_chapter_selected():
+    var view := WorldMapView.new()
+    add_child_autofree(view)
+    var ch1 := _chapter("ch1", ["1-1"])
+    var ch2 := _chapter("ch2", ["2-1"])
+    var layout := _layout([ch1, ch2])
+    view.build(layout, [ch1, ch2], _prog([ch1, ch2]))
+    var captured_id := [""]
+    view.chapter_selected.connect(func(cid, anchor): captured_id[0] = cid)
+    view.select_island(1)
+    assert_eq(captured_id[0], "ch2")
