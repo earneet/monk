@@ -4,6 +4,7 @@ func test_level_map_entry_defaults():
     var e := LevelMapEntry.new()
     assert_eq(e.level_id, "")
     assert_eq(e.position, Vector2.ZERO)
+    assert_eq(e.next_ids.size(), 0)
 
 func test_chapter_map_entry_defaults():
     var e := ChapterMapEntry.new()
@@ -13,6 +14,7 @@ func test_chapter_map_entry_defaults():
     assert_eq(e.icon, "")
     assert_eq(e.path_size, Vector2.ZERO)
     assert_eq(e.levels.size(), 0)
+    assert_eq(e.next_ids.size(), 0)
 
 func test_layout_defaults_and_nest():
     var layout := WorldMapLayout.new()

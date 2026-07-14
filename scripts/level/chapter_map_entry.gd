@@ -7,3 +7,4 @@ extends Resource
 @export var icon: String
 @export var path_size: Vector2
 @export var levels: Array[LevelMapEntry] = []
+@export var next_ids: Array[String] = []
