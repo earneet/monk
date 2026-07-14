@@ -13,11 +13,11 @@ func _init() -> void:
 func _run() -> void:
     DirAccess.make_dir_recursive_absolute("res://resources/menu/")
     var layout := WorldMapLayout.new()
-    layout.canvas_size = Vector2(720, 1280)
-    var ch1 := _chapter("ch1", Vector2(360, 320), Color(0.42, 0.56, 0.35), "🏯", Vector2(720, 960))
+    layout.canvas_size = Vector2(1152, 648)
+    var ch1 := _chapter("ch1", Vector2(576, 150), Color(0.42, 0.56, 0.35), "🏯", Vector2(1152, 648))
     ch1.levels = _levels(["1-1", "1-2", "1-3", "1-4", "1-5"],
         [Vector2(140, 140), Vector2(360, 260), Vector2(560, 400), Vector2(320, 580), Vector2(180, 780)])
-    var ch2 := _chapter("ch2", Vector2(360, 820), Color(0.55, 0.42, 0.26), "⛰️", Vector2(720, 760))
+    var ch2 := _chapter("ch2", Vector2(576, 380), Color(0.55, 0.42, 0.26), "⛰️", Vector2(1152, 648))
     ch2.levels = _levels(["2-1", "2-2", "2-3"],
         [Vector2(160, 180), Vector2(440, 360), Vector2(300, 600)])
     layout.chapters = [ch1, ch2]

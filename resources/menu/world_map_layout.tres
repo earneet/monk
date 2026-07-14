@@ -32,10 +32,10 @@ position = Vector2(180, 780)
 [sub_resource type="Resource" id="Resource_vvai5"]
 script = ExtResource("1_fwhid")
 chapter_id = "ch1"
-position = Vector2(360, 320)
+position = Vector2(576, 150)
 theme_color = Color(0.42, 0.56, 0.35, 1)
 icon = "🏯"
-path_size = Vector2(720, 960)
+path_size = Vector2(1152, 648)
 levels = Array[ExtResource("2_bhduf")]([SubResource("Resource_1anq8"), SubResource("Resource_1w18o"), SubResource("Resource_yngnv"), SubResource("Resource_sp4q0"), SubResource("Resource_yh76g")])
 
 [sub_resource type="Resource" id="Resource_vkrtb"]
@@ -56,13 +56,13 @@ position = Vector2(300, 600)
 [sub_resource type="Resource" id="Resource_kowkk"]
 script = ExtResource("1_fwhid")
 chapter_id = "ch2"
-position = Vector2(360, 820)
+position = Vector2(576, 380)
 theme_color = Color(0.55, 0.42, 0.26, 1)
 icon = "⛰️"
-path_size = Vector2(720, 760)
+path_size = Vector2(1152, 648)
 levels = Array[ExtResource("2_bhduf")]([SubResource("Resource_vkrtb"), SubResource("Resource_k4cgq"), SubResource("Resource_7c6i2")])
 
 [resource]
 script = ExtResource("3_tb4dl")
-canvas_size = Vector2(720, 1280)
+canvas_size = Vector2(1152, 648)
 chapters = Array[ExtResource("1_fwhid")]([SubResource("Resource_vvai5"), SubResource("Resource_kowkk")])
