@@ -3,6 +3,7 @@ extends Node2D
 
 @export var cell_size: int = 64
 var _path_state: PathState
+var _offset: Vector2 = Vector2.ZERO
 
 const COLOR_PLAYER := Color(0.76, 0.27, 0.18)
 
@@ -11,11 +12,15 @@ func bind(path_state: PathState) -> void:
     _path_state.path_changed.connect(_update)
     _update()
 
+func set_offset(offset: Vector2) -> void:
+    _offset = offset
+    _update()
+
 func _update(_p: Array = []) -> void:
     if _path_state.path.size() > 0:
         var last: Vector2i = _path_state.path[_path_state.path.size() - 1]
         @warning_ignore("integer_division")
-        position = (last * cell_size) + Vector2i(cell_size / 2, cell_size / 2)
+        position = _offset + Vector2(last * cell_size + Vector2i(cell_size / 2, cell_size / 2))
     queue_redraw()
 
 func _draw() -> void:

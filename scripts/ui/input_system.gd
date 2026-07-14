@@ -9,10 +9,14 @@ signal reset_request()
 
 var _path_state: PathState
 var _grid_model: GridModel
+var _offset: Vector2 = Vector2.ZERO
 
 func bind(path_state: PathState, grid_model: GridModel) -> void:
     _path_state = path_state
     _grid_model = grid_model
+
+func set_offset(offset: Vector2) -> void:
+    _offset = offset
 
 func _unhandled_input(event: InputEvent) -> void:
     if _path_state == null or _grid_model == null:
@@ -39,7 +43,7 @@ func _handle_key(code: int) -> void:
     _emit_from_delta(d)
 
 func _handle_click(world_pos: Vector2) -> void:
-    var coord: Vector2i = Vector2i(floori(world_pos.x / cell_size), floori(world_pos.y / cell_size))
+    var coord: Vector2i = Vector2i(floori((world_pos.x - _offset.x) / cell_size), floori((world_pos.y - _offset.y) / cell_size))
     move_intent.emit(coord)
 
 func _emit_from_delta(d: Vector2i) -> void:

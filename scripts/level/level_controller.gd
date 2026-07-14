@@ -42,6 +42,11 @@ func _bind_all() -> void:
     _grid_renderer.bind(_grid_model, _mechanic_system, _path_state)
     _player_sprite.cell_size = cell_size
     _player_sprite.bind(_path_state)
+    var grid_pixel := Vector2(_grid_model.size.x * cell_size, _grid_model.size.y * cell_size)
+    var offset: Vector2 = (_grid_renderer.get_viewport_rect().size - grid_pixel) / 2.0
+    _grid_renderer.position = offset
+    _player_sprite.set_offset(offset)
+    _input_system.set_offset(offset)
 
 func _on_move_intent(coord: Vector2i) -> void:
     _path_state.move(coord)

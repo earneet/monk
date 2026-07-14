@@ -16,10 +16,10 @@ func _run() -> void:
     layout.canvas_size = Vector2(1152, 648)
     var ch1 := _chapter("ch1", Vector2(576, 150), Color(0.42, 0.56, 0.35), "🏯", Vector2(1152, 648))
     ch1.levels = _levels(["1-1", "1-2", "1-3", "1-4", "1-5"],
-        [Vector2(140, 140), Vector2(360, 260), Vector2(560, 400), Vector2(320, 580), Vector2(180, 780)])
+        [Vector2(400, 100), Vector2(720, 210), Vector2(480, 330), Vector2(780, 450), Vector2(380, 560)])
     var ch2 := _chapter("ch2", Vector2(576, 380), Color(0.55, 0.42, 0.26), "⛰️", Vector2(1152, 648))
     ch2.levels = _levels(["2-1", "2-2", "2-3"],
-        [Vector2(160, 180), Vector2(440, 360), Vector2(300, 600)])
+        [Vector2(420, 150), Vector2(720, 330), Vector2(500, 530)])
     layout.chapters = [ch1, ch2]
     var chapters := [load(CH1_PATH) as ChapterResource, load(CH2_PATH) as ChapterResource]
     var errors := layout.validate(chapters)
