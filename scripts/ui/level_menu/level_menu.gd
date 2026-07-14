@@ -101,11 +101,13 @@ func _play_enter_tween(_anchor: Vector2) -> void:
     _path_view.modulate.a = 0.0
     _path_view.scale = Vector2(0.3, 0.3)
     var tw := create_tween().set_parallel(true)
-    tw.tween_property(_world_view, "modulate:a", 0.35, TRANS_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    tw.tween_property(_world_view, "modulate:a", 0.0, TRANS_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
     tw.tween_property(_path_view, "modulate:a", 1.0, TRANS_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
     tw.tween_property(_path_view, "scale", Vector2.ONE, TRANS_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    tw.chain().tween_callback(func(): _world_view.visible = false)
 
 func _play_exit_tween() -> void:
+    _world_view.visible = true
     var tw := create_tween().set_parallel(true)
     tw.tween_property(_world_view, "modulate:a", 1.0, TRANS_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
     tw.tween_property(_path_view, "modulate:a", 0.0, TRANS_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)

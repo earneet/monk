@@ -18,6 +18,7 @@ func build(layout: WorldMapLayout, chapters: Array, progression: LevelProgressio
     add_child(_scroll)
     _content = Control.new()
     _content.size = layout.canvas_size
+    _content.custom_minimum_size = layout.canvas_size
     _scroll.add_child(_content)
     var unlocked := progression.unlocked_ids()
     var highlighted := progression.highlighted_id()
