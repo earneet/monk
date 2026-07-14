@@ -44,4 +44,18 @@ func validate(loaded_chapters: Array) -> Array[String]:
                 if (e.levels[i] as LevelMapEntry).level_id != meta_ids[i]:
                     errors.append("章节 %s 关卡顺序不一致(位置 %d)" % [e.chapter_id, i])
                     break
+    var all_level_ids: Dictionary = {}
+    for ch in loaded_chapters:
+        for lvl in (ch as ChapterResource).main_levels:
+            all_level_ids[(lvl as LevelResource).meta.id] = true
+    for entry in chapters:
+        var ce: ChapterMapEntry = entry as ChapterMapEntry
+        for le in ce.levels:
+            var lme: LevelMapEntry = le as LevelMapEntry
+            for nid in lme.next_ids:
+                if not all_level_ids.has(nid):
+                    errors.append("关卡 %s 的 next_ids 引用未知关卡 %s" % [lme.level_id, nid])
+        for nid in ce.next_ids:
+            if not loaded.has(nid):
+                errors.append("章节 %s 的 next_ids 引用未知章节 %s" % [ce.chapter_id, nid])
     return errors

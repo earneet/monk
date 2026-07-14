@@ -79,3 +79,21 @@ func test_validate_wrong_order():
     var chapters := [_chapter_res("ch1", ["1-1", "1-2"])]
     var errors := layout.validate(chapters)
     assert_true(errors.any(func(e): return e.find("顺序") >= 0))
+
+func test_validate_level_next_ids_unknown():
+    var layout := WorldMapLayout.new()
+    var ch := _entry("ch1", ["1-1", "1-2"])
+    (ch.levels[0] as LevelMapEntry).next_ids = ["1-2", "9-9"]
+    layout.chapters = [ch]
+    var chapters := [_chapter_res("ch1", ["1-1", "1-2"])]
+    var errors := layout.validate(chapters)
+    assert_true(errors.any(func(e): return e.find("9-9") >= 0))
+
+func test_validate_chapter_next_ids_unknown():
+    var layout := WorldMapLayout.new()
+    var ch := _entry("ch1", ["1-1"])
+    ch.next_ids = ["chX"]
+    layout.chapters = [ch]
+    var chapters := [_chapter_res("ch1", ["1-1"])]
+    var errors := layout.validate(chapters)
+    assert_true(errors.any(func(e): return e.find("chX") >= 0))
