@@ -36,6 +36,10 @@ func _build_ui() -> void:
     del_btn.text = "删除末节点"
     del_btn.pressed.connect(_on_delete_node)
     toolbar.add_child(del_btn)
+    var clear_btn := Button.new()
+    clear_btn.text = "清空当前模式"
+    clear_btn.pressed.connect(_on_clear_mode)
+    toolbar.add_child(clear_btn)
     _mode_option = OptionButton.new()
     _mode_option.item_selected.connect(_on_mode_changed)
     toolbar.add_child(_mode_option)
@@ -126,6 +130,16 @@ func _on_delete_node() -> void:
         var ce := _layout.chapters[_mode_option.selected - 1] as ChapterMapEntry
         if ce.levels.size() > 0:
             ce.levels.remove_at(ce.levels.size() - 1)
+    _refresh_mode_option()
+    _apply_canvas()
+
+func _on_clear_mode() -> void:
+    if _layout == null:
+        return
+    if _mode_option.selected <= 0:
+        _layout.chapters.clear()
+    elif _mode_option.selected - 1 < _layout.chapters.size():
+        (_layout.chapters[_mode_option.selected - 1] as ChapterMapEntry).levels.clear()
     _refresh_mode_option()
     _apply_canvas()
 
