@@ -100,13 +100,14 @@ func _apply_canvas() -> void:
 func _on_save() -> void:
     if _layout == null:
         return
-    var errors := _layout.validate(_chapters)
+    var clean := _strip_placeholders()
+    var errors := clean.validate(_chapters)
     if errors.size() > 0:
         print("[MenuDesigner] 校验失败,不保存: ", errors)
         return
-    var err := ResourceSaver.save(_layout, LAYOUT_PATH)
+    var err := ResourceSaver.save(clean, LAYOUT_PATH)
     if err == OK:
-        print("[MenuDesigner] 已保存: ", LAYOUT_PATH)
+        print("[MenuDesigner] 已保存(过滤未关联节点): ", LAYOUT_PATH)
     else:
         print("[MenuDesigner] 保存失败: ", err)
 
@@ -144,44 +145,62 @@ func _on_clear_mode() -> void:
     _apply_canvas()
 
 func _add_island() -> void:
-    for ch in _chapters:
-        var cid: String = (ch as ChapterResource).id
-        if not _has_entry(cid):
-            var entry := ChapterMapEntry.new()
-            entry.chapter_id = cid
-            entry.position = Vector2(200, 200 + _layout.chapters.size() * 120)
-            entry.theme_color = Color(0.42, 0.56, 0.35)
-            entry.icon = "🏯"
-            entry.path_size = Vector2(1152, 648)
-            _layout.chapters.append(entry)
-            print("[MenuDesigner] 添加岛屿: ", cid)
-            return
-    print("[MenuDesigner] 无可添加章节(所有章节已布局)")
+    var entry := ChapterMapEntry.new()
+    entry.chapter_id = "node_%d" % (_layout.chapters.size() + 1)
+    entry.position = Vector2(200, 200 + _layout.chapters.size() * 120)
+    entry.theme_color = Color(0.5, 0.5, 0.5)
+    entry.icon = "❓"
+    entry.path_size = Vector2(1152, 648)
+    _layout.chapters.append(entry)
 
 func _add_level(chapter_index: int) -> void:
     var ce := _layout.chapters[chapter_index] as ChapterMapEntry
-    var ch := _find_chapter(ce.chapter_id)
-    if ch == null:
-        return
-    for lvl in ch.main_levels:
-        var lid: String = (lvl as LevelResource).meta.id
-        if not _has_level_entry(ce, lid):
-            var entry := LevelMapEntry.new()
-            entry.level_id = lid
-            entry.position = Vector2(200, 100 + ce.levels.size() * 100)
-            ce.levels.append(entry)
-            print("[MenuDesigner] 添加关卡: ", lid)
-            return
-    print("[MenuDesigner] 无可添加关卡(该章节所有关卡已布局)")
+    var entry := LevelMapEntry.new()
+    entry.level_id = "node_%d" % (ce.levels.size() + 1)
+    entry.position = Vector2(200, 100 + ce.levels.size() * 100)
+    ce.levels.append(entry)
 
-func _has_entry(cid: String) -> bool:
-    for e in _layout.chapters:
-        if (e as ChapterMapEntry).chapter_id == cid:
-            return true
-    return false
+func _real_chapter_ids() -> Dictionary:
+    var d := {}
+    for ch in _chapters:
+        d[(ch as ChapterResource).id] = true
+    return d
 
-func _has_level_entry(ce: ChapterMapEntry, lid: String) -> bool:
-    for le in ce.levels:
-        if (le as LevelMapEntry).level_id == lid:
-            return true
-    return false
+func _real_level_ids() -> Dictionary:
+    var d := {}
+    for ch in _chapters:
+        for lvl in (ch as ChapterResource).main_levels:
+            d[(lvl as LevelResource).meta.id] = true
+    return d
+
+func _strip_placeholders() -> WorldMapLayout:
+    var clean := WorldMapLayout.new()
+    clean.canvas_size = _layout.canvas_size
+    var real_ch := _real_chapter_ids()
+    var real_lvl := _real_level_ids()
+    for entry in _layout.chapters:
+        var ce := entry as ChapterMapEntry
+        if not real_ch.has(ce.chapter_id):
+            continue
+        var copy := ChapterMapEntry.new()
+        copy.chapter_id = ce.chapter_id
+        copy.position = ce.position
+        copy.theme_color = ce.theme_color
+        copy.icon = ce.icon
+        copy.path_size = ce.path_size
+        for nid in ce.next_ids:
+            if real_ch.has(nid):
+                copy.next_ids.append(nid)
+        for le in ce.levels:
+            var lme := le as LevelMapEntry
+            if not real_lvl.has(lme.level_id):
+                continue
+            var lcopy := LevelMapEntry.new()
+            lcopy.level_id = lme.level_id
+            lcopy.position = lme.position
+            for nid in lme.next_ids:
+                if real_lvl.has(nid):
+                    lcopy.next_ids.append(nid)
+            copy.levels.append(lcopy)
+        clean.chapters.append(copy)
+    return clean
