@@ -74,12 +74,17 @@ func _load_chapters() -> Array:
     return result
 
 func _refresh_mode_option() -> void:
+    var prev := _mode_option.selected
     _mode_option.clear()
     _mode_option.add_item("世界地图")
     for entry in _layout.chapters:
         var ce := entry as ChapterMapEntry
         var ch := _find_chapter(ce.chapter_id)
         _mode_option.add_item("章节: %s" % (ch.display_name if ch != null else ce.chapter_id))
+    var target := prev if prev > 0 else 0
+    if target >= _mode_option.item_count:
+        target = _mode_option.item_count - 1
+    _mode_option.selected = target
 
 func _find_chapter(cid: String) -> ChapterResource:
     for ch in _chapters:
