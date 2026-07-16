@@ -57,12 +57,19 @@ func _set_node_pos(entry: Resource, pos: Vector2) -> void:
         (entry as LevelMapEntry).position = pos
 
 func _toggle_next(entry: Resource, target_id: String) -> void:
-    var arr: Array = _node_next(entry)
+    var src: Array = _node_next(entry)
+    var arr: Array[String] = []
+    for x in src:
+        arr.append(x)
     var idx := arr.find(target_id)
     if idx >= 0:
         arr.remove_at(idx)
     else:
         arr.append(target_id)
+    if entry is ChapterMapEntry:
+        (entry as ChapterMapEntry).next_ids = arr
+    else:
+        (entry as LevelMapEntry).next_ids = arr
 
 func _id_to_pos(id: String) -> Vector2:
     for n in _nodes:
