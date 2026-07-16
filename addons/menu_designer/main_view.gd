@@ -55,6 +55,7 @@ func _load_all() -> void:
     else:
         _layout = WorldMapLayout.new()
         _layout.canvas_size = Vector2(1152, 648)
+    _materialize_defaults()
     _refresh_mode_option()
     _apply_canvas()
 
@@ -72,6 +73,18 @@ func _load_chapters() -> Array:
                 result.append(ch)
         fn = dir.get_next()
     return result
+
+func _materialize_defaults() -> void:
+    if _layout == null:
+        return
+    for i in range(_layout.chapters.size()):
+        var ce := _layout.chapters[i] as ChapterMapEntry
+        if ce.next_ids.is_empty() and i + 1 < _layout.chapters.size():
+            ce.next_ids = [(_layout.chapters[i + 1] as ChapterMapEntry).chapter_id]
+        for j in range(ce.levels.size()):
+            var le := ce.levels[j] as LevelMapEntry
+            if le.next_ids.is_empty() and j + 1 < ce.levels.size():
+                le.next_ids = [(ce.levels[j + 1] as LevelMapEntry).level_id]
 
 func _refresh_mode_option() -> void:
     var prev := _mode_option.selected

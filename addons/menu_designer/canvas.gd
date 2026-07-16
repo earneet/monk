@@ -56,15 +56,13 @@ func _set_node_pos(entry: Resource, pos: Vector2) -> void:
     else:
         (entry as LevelMapEntry).position = pos
 
-func _add_next(entry: Resource, target_id: String) -> void:
+func _toggle_next(entry: Resource, target_id: String) -> void:
     var arr: Array = _node_next(entry)
-    if not (target_id in arr):
+    var idx := arr.find(target_id)
+    if idx >= 0:
+        arr.remove_at(idx)
+    else:
         arr.append(target_id)
-
-func _default_next_ids(idx: int) -> Array:
-    if idx + 1 < _nodes.size():
-        return [_node_id(_nodes[idx + 1])]
-    return []
 
 func _id_to_pos(id: String) -> Vector2:
     for n in _nodes:
@@ -106,7 +104,7 @@ func _gui_input(event: InputEvent) -> void:
         elif event.button_index == MOUSE_BUTTON_RIGHT and _linking_from != null:
             var target: Resource = _hit_node(event.position)
             if target != null and target != _linking_from:
-                _add_next(_linking_from, _node_id(target))
+                _toggle_next(_linking_from, _node_id(target))
             _linking_from = null
             queue_redraw()
             accept_event()
@@ -114,8 +112,7 @@ func _gui_input(event: InputEvent) -> void:
 func _draw() -> void:
     for i in range(_nodes.size()):
         var from: Resource = _nodes[i]
-        var nexts: Array = _node_next(from)
-        var targets: Array = nexts if nexts.size() > 0 else _default_next_ids(i)
+        var targets: Array = _node_next(from)
         for tid in targets:
             var a: Vector2 = _node_pos(from) + NODE_SIZE * 0.5
             var b: Vector2 = _id_to_pos(tid) + NODE_SIZE * 0.5
