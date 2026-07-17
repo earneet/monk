@@ -43,10 +43,14 @@ func _build_ui() -> void:
     _mode_option = OptionButton.new()
     _mode_option.item_selected.connect(_on_mode_changed)
     toolbar.add_child(_mode_option)
+    var scroll := ScrollContainer.new()
+    scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    vbox.add_child(scroll)
     _canvas = MenuCanvas.new()
-    _canvas.custom_minimum_size = Vector2(800, 500)
-    _canvas.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    vbox.add_child(_canvas)
+    _canvas.custom_minimum_size = Vector2(1600, 1200)
+    _canvas.mouse_filter = Control.MOUSE_FILTER_STOP
+    scroll.add_child(_canvas)
 
 func _load_all() -> void:
     _chapters = _load_chapters()
