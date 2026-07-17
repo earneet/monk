@@ -79,7 +79,7 @@ func _id_to_pos(id: String) -> Vector2:
 
 func _hit_node(pos: Vector2) -> Resource:
     for n in _nodes:
-        if _node_rect(n).has_point(pos):
+        if _node_rect(n).grow(4).has_point(pos):
             return n
     return null
 
@@ -117,6 +117,12 @@ func _gui_input(event: InputEvent) -> void:
             accept_event()
 
 func _draw() -> void:
+    var font := ThemeDB.get_default_theme().default_font
+    for n in _nodes:
+        var rect: Rect2 = _node_rect(n)
+        draw_rect(rect, Color(0.42, 0.56, 0.35), true)
+        draw_rect(rect, Color(0.2, 0.2, 0.2), false)
+        draw_string(font, rect.position + Vector2(4, 18), _node_id(n), HORIZONTAL_ALIGNMENT_LEFT, -1, 14)
     for i in range(_nodes.size()):
         var from: Resource = _nodes[i]
         var targets: Array = _node_next(from)
@@ -124,12 +130,6 @@ func _draw() -> void:
             var a: Vector2 = _node_pos(from) + NODE_SIZE * 0.5
             var b: Vector2 = _id_to_pos(tid) + NODE_SIZE * 0.5
             _draw_arrow(a, b, Color(0.5, 0.45, 0.3))
-    var font := ThemeDB.get_default_theme().default_font
-    for n in _nodes:
-        var rect: Rect2 = _node_rect(n)
-        draw_rect(rect, Color(0.42, 0.56, 0.35), true)
-        draw_rect(rect, Color(0.2, 0.2, 0.2), false)
-        draw_string(font, rect.position + Vector2(4, 18), _node_id(n), HORIZONTAL_ALIGNMENT_LEFT, -1, 14)
     if _linking_from != null:
         var a2: Vector2 = _node_pos(_linking_from) + NODE_SIZE * 0.5
         _draw_arrow(a2, _linking_mouse, Color(0.8, 0.3, 0.3))
@@ -140,8 +140,9 @@ func _draw_arrow(a: Vector2, b: Vector2, color: Color) -> void:
         return
     var dir := d.normalized()
     var perp := Vector2(-dir.y, dir.x)
-    var tip := b - dir * 24.0
-    draw_line(a, tip, color, 2.0)
+    var a_start := a + dir * 40.0
+    var tip := b - dir * 40.0
+    draw_line(a_start, tip, color, 2.0)
     var head := 12.0
     var wing := 6.0
     var base := tip - dir * head
