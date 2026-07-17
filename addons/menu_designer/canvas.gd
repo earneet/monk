@@ -123,7 +123,7 @@ func _draw() -> void:
         for tid in targets:
             var a: Vector2 = _node_pos(from) + NODE_SIZE * 0.5
             var b: Vector2 = _id_to_pos(tid) + NODE_SIZE * 0.5
-            draw_line(a, b, Color(0.5, 0.45, 0.3), 2.0)
+            _draw_arrow(a, b, Color(0.5, 0.45, 0.3))
     var font := ThemeDB.get_default_theme().default_font
     for n in _nodes:
         var rect: Rect2 = _node_rect(n)
@@ -132,4 +132,18 @@ func _draw() -> void:
         draw_string(font, rect.position + Vector2(4, 18), _node_id(n), HORIZONTAL_ALIGNMENT_LEFT, -1, 14)
     if _linking_from != null:
         var a2: Vector2 = _node_pos(_linking_from) + NODE_SIZE * 0.5
-        draw_line(a2, _linking_mouse, Color(0.8, 0.3, 0.3), 2.0)
+        _draw_arrow(a2, _linking_mouse, Color(0.8, 0.3, 0.3))
+
+func _draw_arrow(a: Vector2, b: Vector2, color: Color) -> void:
+    var d := b - a
+    if d.length() < 1.0:
+        return
+    var dir := d.normalized()
+    var perp := Vector2(-dir.y, dir.x)
+    var tip := b - dir * 24.0
+    draw_line(a, tip, color, 2.0)
+    var head := 12.0
+    var wing := 6.0
+    var base := tip - dir * head
+    draw_line(tip, base + perp * wing, color, 2.0)
+    draw_line(tip, base - perp * wing, color, 2.0)
