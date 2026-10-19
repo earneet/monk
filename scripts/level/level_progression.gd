@@ -53,3 +53,9 @@ func mark_completed(level_id: String) -> void:
 
 func is_completed(level_id: String) -> bool:
     return _completed.has(level_id)
+
+func completed_ids() -> Array[String]:
+    var result: Array[String] = []
+    for id in _completed:
+        result.append(id)
+    return result

@@ -77,3 +77,14 @@ func test_next_ids_overrides_default():
     var unlocked := prog.unlocked_ids()
     assert_true("1-3" in unlocked)
     assert_false("1-2" in unlocked)
+
+func test_completed_ids_empty_initially():
+    var ch1 := _chapter("ch1", ["1-1", "1-2"])
+    var prog := LevelProgression.new([ch1])
+    assert_eq(prog.completed_ids(), [])
+
+func test_completed_ids_returns_marked():
+    var ch1 := _chapter("ch1", ["1-1", "1-2"])
+    var prog := LevelProgression.new([ch1])
+    prog.mark_completed("1-1")
+    assert_eq(prog.completed_ids(), ["1-1"])
