@@ -30,7 +30,7 @@
 | D1 | 架构 | **`SaveSystem` autoload**(架构文档 §7 预定,项目唯一 autoload) | 跨场景全局读进度;文档先例 | boot 内 RefCounted(仅 boot 可见,背离架构文档) |
 | D2 | 存档格式 | **JSON `{"version":1,"completed":[...]}`,路径 `user://progress.json`** | 可读、带版本号易迁移;`save_path` 可注入,测试用临时路径 | ConfigFile / 二进制(可读性差)、Resource `.tres`(架构文档明确不写) |
 | D3 | 保存时机 | **通关立即保存**(`_on_level_won`) | 崩溃安全;无退出钩子 | 退出时保存(崩溃丢档)、定时保存(无谓 IO) |
-| D4 | 容错 | **缺失/损坏/version≠1 → 空列表 + push_warning** | 首次运行、手改坏档安全退化,不崩 | 抛错(玩家无法自救) |
+| D4 | 容错 | **损坏/version≠1 → 空列表 + push_warning;缺失(首跑)→ 静默空列表** | 手改坏档安全退化,不崩;首跑是正常态,告警即噪音 | 抛错(玩家无法自救) |
 | D5 | 陈旧 id | **存档中未知关卡 id 不过滤** | `LevelProgression` 已容忍(仅影响 `is_completed`,不影响解锁序列);关卡 id 稳定 | 载入时按章节过滤(引入 SaveSystem↔章节耦合) |
 
 ## 3. 架构(D1)
@@ -44,10 +44,11 @@ flowchart TD
     Menu["LevelMenu / 两级视图"] -->|unlocked_ids / is_completed| Progression
 ```
 
-- `SaveSystem`(`scripts/level/save_system.gd`,`class_name SaveSystem extends Node`):
+- `SaveSystem`(`scripts/level/save_system.gd`,`extends Node`,**无 class_name**——引擎禁止 autoload 与 class_name 同名,类型经 `preload` + autoload 全局名暴露):
+  - `AUTOLOAD_PATH: String = "/root/SaveSystem"`(实例定位常量,boot/测试共用)
   - `save_path: String = "user://progress.json"`(可注入)
   - `load_completed() -> Array[String]`
-  - `save_completed(ids: Array) -> bool`
+  - `save_completed(ids: Array[String]) -> bool`(写 `.tmp` 校验后 `rename_absolute` 整体替换——`open(WRITE)` 会立刻截断旧档,直写时写一半崩溃即丢全部进度)
 - UI 零改动:菜单读进度仅走 `unlocked_ids() / highlighted_id() / is_completed()`,全部由构造水合的 `completed` 派生。
 
 ## 4. 数据流
@@ -73,6 +74,12 @@ flowchart TD
 
 ## 7. 后续
 
-- 存档迁移(字段变更时 version 升级 + 迁移函数)
+- 存档迁移(字段变更时 version 升级 + 迁移函数)。**已知风险**:迁移落地前,若玩家持有 version≠1 的存档(如从新版本回滚),本版本拒读 → 空进度 → 首次通关即覆盖旧档;升级存档格式时必须同步迁移
 - 「重置进度」入口(设置菜单,现无设置 UI)
 - 章节解锁独立存储(若未来出现非关卡派生的解锁条件)
+
+## 8. 已知限制(2026-10-19 对抗审查后记录)
+
+- 坏 JSON 解析时引擎除本模块 push_warning 外还会打一条 ERROR 级日志(GDScript 无静默解析 API),属预期降级路径,勿误判故障
+- `save_completed` 失败(磁盘满/权限)仅告警不重试,boot 不消费返回值;当局菜单仍显示已通关,退出即丢当次进度——原型期接受
+- `_save_system()` 经 `get_node(AUTOLOAD_PATH)` 取 autoload,无 null 防御(autoload 为 project.godot 硬依赖,缺失即启动配置错误)
