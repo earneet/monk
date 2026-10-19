@@ -1,4 +1,4 @@
-class_name SaveSystem
+# 无 class_name:引擎禁止 autoload 与 class_name 同名,类型经 autoload 全局名暴露
 extends Node
 
 const SAVE_VERSION := 1

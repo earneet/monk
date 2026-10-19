@@ -1,11 +1,13 @@
 extends GutTest
 
+const SaveSystemScript := preload("res://scripts/level/save_system.gd")
+
 const _TMP_NAME := "tmp_test_save_system.json"
 
-var _save: SaveSystem
+var _save: SaveSystemScript
 
 func before_each() -> void:
-    _save = SaveSystem.new()
+    _save = SaveSystemScript.new()
     autofree(_save)
     _save.save_path = "user://" + _TMP_NAME
     _delete_tmp()

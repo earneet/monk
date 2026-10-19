@@ -3,6 +3,8 @@ extends Control
 
 const LevelScene := preload("res://Scenes/level.tscn")
 const LevelMenuScene := preload("res://Scenes/level_menu.tscn")
+# 经节点路径取 autoload 实例:GUT 收集脚本时全局名会按类解析,实例调用过不了编译
+const SaveSystemScript := preload("res://scripts/level/save_system.gd")
 
 @export var chapter_paths: Array[String] = [
     "res://resources/chapters/chapter_01.tres",
@@ -15,10 +17,13 @@ var _progression: LevelProgression
 var _level_menu: LevelMenu
 var _level_instance: Node
 
+func _save_system() -> SaveSystemScript:
+    return get_node("/root/SaveSystem") as SaveSystemScript
+
 func _ready() -> void:
     _load_chapters()
     var layout := _load_layout()
-    _progression = LevelProgression.new(_chapters, [], _build_next_map(layout))
+    _progression = LevelProgression.new(_chapters, _save_system().load_completed(), _build_next_map(layout))
     _build_menu(layout)
 
 func _load_chapters() -> void:
@@ -66,6 +71,7 @@ func _on_level_chosen(level: LevelResource) -> void:
 func _on_level_won() -> void:
     var id: String = (_level_instance.level as LevelResource).meta.id
     _progression.mark_completed(id)
+    _save_system().save_completed(_progression.completed_ids())
     _exit_level()
     if _level_menu != null:
         _level_menu.visible = true
