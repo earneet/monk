@@ -88,3 +88,10 @@ func test_completed_ids_returns_marked():
     var prog := LevelProgression.new([ch1])
     prog.mark_completed("1-1")
     assert_eq(prog.completed_ids(), ["1-1"])
+
+func test_completed_ids_deduplicates_repeated_marks():
+    var ch1 := _chapter("ch1", ["1-1", "1-2"])
+    var prog := LevelProgression.new([ch1])
+    prog.mark_completed("1-1")
+    prog.mark_completed("1-1")
+    assert_eq(prog.completed_ids(), ["1-1"])

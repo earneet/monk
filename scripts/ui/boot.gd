@@ -18,7 +18,7 @@ var _level_menu: LevelMenu
 var _level_instance: Node
 
 func _save_system() -> SaveSystemScript:
-    return get_node("/root/SaveSystem") as SaveSystemScript
+    return get_node(SaveSystemScript.AUTOLOAD_PATH) as SaveSystemScript
 
 func _ready() -> void:
     _load_chapters()
