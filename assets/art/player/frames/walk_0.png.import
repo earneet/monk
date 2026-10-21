@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://doom0pa6ugk3n"
-path="res://.godot/imported/dwater.png-7f755f631436a73cf83fd5a0429da849.ctex"
+uid="uid://cx40l5gp416mf"
+path="res://.godot/imported/walk_0.png-041ef0f880d54259c96dd0f1de12d05f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/tiles/dwater.png"
-dest_files=["res://.godot/imported/dwater.png-7f755f631436a73cf83fd5a0429da849.ctex"]
+source_file="res://assets/art/player/frames/walk_0.png"
+dest_files=["res://.godot/imported/walk_0.png-041ef0f880d54259c96dd0f1de12d05f.ctex"]
 
 [params]
 

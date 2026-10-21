@@ -28,9 +28,14 @@ description: 调用 ComfyUI 服务器生成游戏美术资源（瓦片贴图、�
 
 1. prompt 末尾加「纯绿色纯色背景，色值00FF00，背景完全平坦无纹理无阴影无渐变」
 2. 本地去背：`python tools/comfy/chroma_key.py in.png out.png [--tol 60] [--trim 12] [--out-size 512]`
-   （边缘 flood-fill 只清与边连通的绿；自动去绿溢色 + alpha 羽化；--trim 裁到内容）
+   （边缘 flood-fill 只清与边连通的绿；自动去绿溢色 + alpha 羽化；--trim 裁到内容；
+   `--key-all-green` 追加清除封闭强绿残片——帧表里被角色/道具围住的绿幕必须开这个）
+3. **动画帧表**：qwen 可直出「横向 N 格动画帧表」——prompt 写明同一角色、每帧姿势差异、
+   大小位置完全一致、等间距排列。切片后按 alpha bbox 底部居中对齐入画布再入库，
+   消除帧间抖动。动画验收用 `tests/visual/anim_probe.tscn` 专门场景逐帧摆拍，
+   不要在主关卡场景里目测。
 
-实测 qwen 对绿幕遵从度很高（monk sprite、圆形图标均一次成功）。
+实测 qwen 对绿幕遵从度很高（monk sprite、圆形图标、假山、池塘、法阵均一次成功）。
 
 ## 标准闭环
 

@@ -1,8 +1,8 @@
 class_name Boot
 extends Control
 
-const LevelScene := preload("res://Scenes/level.tscn")
-const LevelMenuScene := preload("res://Scenes/level_menu.tscn")
+const LevelScene := preload("res://scenes/level.tscn")
+const LevelMenuScene := preload("res://scenes/level_menu.tscn")
 # 经节点路径取 autoload 实例:GUT 收集脚本时全局名会按类解析,实例调用过不了编译
 const SaveSystemScript := preload("res://scripts/level/save_system.gd")
 

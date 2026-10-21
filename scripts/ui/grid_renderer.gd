@@ -6,18 +6,25 @@ var _grid_model: GridModel
 var _mechanic_system: MechanicSystem
 var _path_state: PathState
 
+const FLOOR_PERIOD := 4  # floor.png 每 256px 含 4 个 64px 采样块,镜像衔接
+const FLOOR_TILE := 64
+
 const TEX_FLOOR := preload("res://assets/art/tiles/floor.png")
-const TEX_WALL := preload("res://assets/art/tiles/wall.png")
-const TEX_WATER := preload("res://assets/art/tiles/water.png")
+const TEX_WALLS: Array[Texture2D] = [
+    preload("res://assets/art/tiles/wall_0.png"),
+    preload("res://assets/art/tiles/wall_1.png"),
+    preload("res://assets/art/tiles/wall_2.png"),
+]
+const TEX_STREAM := preload("res://assets/art/tiles/stream.png")
+const TEX_POND := preload("res://assets/art/tiles/pond.png")
 const TEX_LEVER := preload("res://assets/art/tiles/lever.png")
 const TEX_DOOR := preload("res://assets/art/tiles/door.png")
 const TEX_BRIDGE := preload("res://assets/art/tiles/bridge.png")
-const TEX_DWATER := preload("res://assets/art/tiles/dwater.png")
 const TEX_PORTAL := preload("res://assets/art/tiles/portal.png")
 const TEX_SWEPT := preload("res://assets/art/tiles/swept.png")
 
 const TINT_INACTIVE := Color(0.5, 0.48, 0.45)
-const TINT_DWATER_DEEP := Color(0.42, 0.55, 0.78)
+const TINT_DWATER_DEEP := Color(0.5, 0.62, 0.82)
 const COLOR_SWEPT := Color(1.0, 1.0, 1.0, 0.55)
 const COLOR_GRID := Color(0.1, 0.08, 0.05, 0.10)
 const COLOR_PORTAL_LINK := Color(0.62, 0.42, 0.92, 0.65)
@@ -37,39 +44,52 @@ func _draw() -> void:
     var board := Rect2(-8.0, -8.0, _grid_model.size.x * cell_size + 16.0, _grid_model.size.y * cell_size + 16.0)
     draw_rect(board, COLOR_MAT)
     draw_rect(board, COLOR_MAT_BORDER, false, 2.0)
-    draw_texture_rect(TEX_FLOOR, Rect2(Vector2.ZERO, Vector2(_grid_model.size) * cell_size), false)
-    var scatter: Dictionary = {}
+    var obstacles: Dictionary = {}
     for y in range(_grid_model.size.y):
         for x in range(_grid_model.size.x):
             var coord := Vector2i(x, y)
             var data: MechanicData = _mechanic_system.data_at(coord)
+            var rect := Rect2(x * cell_size, y * cell_size, cell_size, cell_size)
+            draw_texture_rect_region(TEX_FLOOR, rect, _floor_region(coord))
             if data == null:
                 continue
-            var tex := _cell_texture(coord)
-            if _is_scatter(tex):
-                if not scatter.has(tex):
-                    scatter[tex] = {}
-                var bucket: Dictionary = scatter[tex]
-                bucket[coord] = true
-                if not bucket.has("sample"):
-                    bucket["sample"] = data
+            var kind := _kind_of(data)
+            if kind == "":
+                draw_texture_rect(_cell_texture(data), rect, false, _cell_tint(data, _path_state.path))
             else:
-                var rect := Rect2(x * cell_size, y * cell_size, cell_size, cell_size)
-                draw_texture_rect(tex, rect, false, _cell_tint(data, _path_state.path))
-    for tex: Texture2D in scatter:
-        _draw_merged(tex, scatter[tex])
+                if not obstacles.has(kind):
+                    obstacles[kind] = {"cells": {}, "sample": data}
+                (obstacles[kind]["cells"] as Dictionary)[coord] = true
+    for kind: String in obstacles:
+        _draw_obstacles(kind, obstacles[kind])
     for c in _path_state.path:
         if _mechanic_system.data_at(c) == null:
             draw_texture_rect(TEX_SWEPT, Rect2(c.x * cell_size, c.y * cell_size, cell_size, cell_size), false, COLOR_SWEPT)
     _draw_grid_lines()
     _draw_portal_links()
 
-func _is_scatter(tex: Texture2D) -> bool:
-    return tex == TEX_WALL or tex == TEX_WATER or tex == TEX_DWATER
+func _floor_region(coord: Vector2i) -> Rect2:
+    var px := _mirror_idx(coord.x, FLOOR_PERIOD) * FLOOR_TILE
+    var py := _mirror_idx(coord.y, FLOOR_PERIOD) * FLOOR_TILE
+    return Rect2(px, py, FLOOR_TILE, FLOOR_TILE)
 
-func _draw_merged(tex: Texture2D, cells: Dictionary) -> void:
-    # 贪心合并同行同宽的相邻格为整块矩形，消除格间接缝（岩石成片、水道成河）
-    var tint := _cell_tint(cells.get("sample"), _path_state.path) if tex == TEX_DWATER else Color.WHITE
+func _mirror_idx(i: int, n: int) -> int:
+    var m := posmod(i, n * 2)
+    return m if m < n else n * 2 - 1 - m
+
+func _kind_of(data: MechanicData) -> String:
+    if data is WallData:
+        return "wall"
+    if data is FlowingWaterData:
+        return "stream"
+    if data is DynamicWaterData:
+        return "pond"
+    if data is PortalData:
+        return "portal"
+    return ""
+
+func _draw_obstacles(kind: String, bucket: Dictionary) -> void:
+    var cells: Dictionary = bucket["cells"]
     var used := {}
     for c in cells:
         if c is not Vector2i or used.has(c):
@@ -92,11 +112,30 @@ func _draw_merged(tex: Texture2D, cells: Dictionary) -> void:
             for ix in range(w):
                 used[c + Vector2i(ix, iy)] = true
         var rect := Rect2(c.x * cell_size, c.y * cell_size, w * cell_size, h * cell_size)
-        var flip := absi((c.x * 7 + c.y * 13) * 2654435761) % 4
-        var t := Transform2D(0.0, Vector2(-1.0 if flip % 2 == 0 else 1.0, -1.0 if flip >= 2 else 1.0), 0.0, rect.get_center())
-        draw_set_transform_matrix(t)
-        draw_texture_rect(tex, Rect2(-rect.size / 2.0, rect.size), false, tint)
-        draw_set_transform_matrix(Transform2D())
+        var hashv := absi((c.x * 7 + c.y * 13) * 2654435761)
+        match kind:
+            "wall":
+                var variant := TEX_WALLS[(hashv + (1 if h > w else 0)) % TEX_WALLS.size()]
+                var fit := rect.grow(-rect.size.x * 0.04)
+                var t := Transform2D(0.0, Vector2(-1.0 if hashv % 2 == 0 else 1.0, 1.0), 0.0, fit.get_center())
+                draw_set_transform_matrix(t)
+                draw_texture_rect(variant, Rect2(-fit.size / 2.0, fit.size), false)
+                draw_set_transform_matrix(Transform2D())
+            "stream":
+                if rect.size.x >= rect.size.y:
+                    draw_texture_rect(TEX_STREAM, rect, false)
+                else:
+                    var t := Transform2D(TAU / 4.0, Vector2.ONE, 0.0, rect.get_center())
+                    draw_set_transform_matrix(t)
+                    draw_texture_rect(TEX_STREAM, Rect2(-Vector2(rect.size.y, rect.size.x) / 2.0, Vector2(rect.size.y, rect.size.x)), false)
+                    draw_set_transform_matrix(Transform2D())
+            "pond":
+                var sample: MechanicData = bucket["sample"]
+                var tint := _cell_tint(sample, _path_state.path)
+                var fit := rect.grow(-rect.size.x * 0.08)
+                draw_texture_rect(TEX_POND, fit, false, tint)
+            "portal":
+                draw_texture_rect(TEX_PORTAL, rect.grow(-rect.size.x * 0.04), false)
 
 func _draw_grid_lines() -> void:
     for x in range(_grid_model.size.x + 1):
@@ -117,20 +156,13 @@ func _draw_portal_links() -> void:
             draw_string_outline(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 18, 3, Color(0.1, 0.05, 0.15))
             draw_string(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(0.9, 0.85, 1.0))
 
-func _cell_texture(coord: Vector2i) -> Texture2D:
-    var data: MechanicData = _mechanic_system.data_at(coord)
-    if data is WallData:
-        return TEX_WALL
-    if data is FlowingWaterData:
-        return TEX_WATER
+func _cell_texture(data: MechanicData) -> Texture2D:
     if data is LeverData:
         return TEX_LEVER
     if data is DoorData:
         return TEX_DOOR
     if data is BridgeData:
         return TEX_BRIDGE
-    if data is DynamicWaterData:
-        return TEX_DWATER
     if data is PortalData:
         return TEX_PORTAL
     return TEX_FLOOR

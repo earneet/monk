@@ -71,6 +71,7 @@ def main():
     ap.add_argument("src")
     ap.add_argument("dst")
     ap.add_argument("--tol", type=int, default=60, help="绿判定阈值：g - max(r,b) > tol 视为绿幕")
+    ap.add_argument("--key-all-green", action="store_true", help="清除画面内全部强绿像素（含封闭区，处理角色身上残留的绿幕碎块）")
     ap.add_argument("--feather", type=float, default=1.2, help="alpha 边缘高斯羽化半径(px)")
     ap.add_argument("--trim", type=int, default=0, help="按 alpha 内容裁切并留该像素边距（0=不裁）")
     ap.add_argument("--out-size", type=int, default=0, help="输出缩放到该边长（保持宽高比；0=原尺寸）")
@@ -81,6 +82,8 @@ def main():
     cand, margin = green_mask(rgb, args.tol)
     weak, _ = green_mask(rgb, max(args.tol // 3, 8))
     keyed = flood_from_border(cand, weak)
+    if args.key_all_green:
+        keyed = keyed | cand
     alpha = np.where(keyed, 0, 255).astype(np.uint8)
 
     a_img = Image.fromarray(alpha, "L").filter(ImageFilter.GaussianBlur(args.feather))
