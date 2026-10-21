@@ -5,7 +5,8 @@ extends Node2D
 var _path_state: PathState
 var _offset: Vector2 = Vector2.ZERO
 
-const COLOR_PLAYER := Color(0.76, 0.27, 0.18)
+const TEX_MONK := preload("res://assets/art/player/monk.png")
+const COLOR_SHADOW := Color(0.05, 0.05, 0.08, 0.30)
 
 func bind(path_state: PathState) -> void:
     _path_state = path_state
@@ -24,4 +25,9 @@ func _update(_p: Array = []) -> void:
     queue_redraw()
 
 func _draw() -> void:
-    draw_circle(Vector2.ZERO, cell_size * 0.3, COLOR_PLAYER)
+    var height := cell_size * 1.3
+    var width := height * TEX_MONK.get_width() / float(TEX_MONK.get_height())
+    draw_set_transform(Vector2(0, cell_size * 0.40), 0.0, Vector2(1.0, 0.38))
+    draw_circle(Vector2.ZERO, width * 0.62, COLOR_SHADOW)
+    draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+    draw_texture_rect(TEX_MONK, Rect2(-width / 2.0, -height * 0.62, width, height), false)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Resource" path="res://resources/levels/test_level_01.tres" id="1_lvl"]
 [ext_resource type="Script" path="res://scripts/level/level_controller.gd" id="2_ctrl"]
@@ -6,11 +6,19 @@
 [ext_resource type="Script" path="res://scripts/ui/grid_renderer.gd" id="4_grid"]
 [ext_resource type="Script" path="res://scripts/ui/player_sprite.gd" id="5_plr"]
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="6_hud"]
+[ext_resource type="Texture2D" path="res://assets/art/background/bg_temple.png" id="7_bg"]
 
 [node name="Level" type="Node"]
 script = ExtResource("2_ctrl")
 level = ExtResource("1_lvl")
 cell_size = 64
+
+[node name="Background" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("7_bg")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="GridRenderer" type="Node2D" parent="."]
 script = ExtResource("4_grid")

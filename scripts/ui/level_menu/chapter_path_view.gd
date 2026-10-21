@@ -31,6 +31,7 @@ func build(entries: Array, chapter: ChapterResource, progression: LevelProgressi
     _back_button = Button.new()
     _back_button.text = "◀ 返回世界"
     _back_button.position = Vector2(10, 10)
+    UITheme.style_button(_back_button)
     _back_button.pressed.connect(request_back)
     add_child(_back_button)
     var unlocked := progression.unlocked_ids()
@@ -64,6 +65,7 @@ func _make_node(entry: LevelMapEntry, unlocked: bool, highlighted: bool, complet
     panel.add_to_group("level_node")
     panel.position = entry.position
     panel.size = Vector2(48, 48)
+    panel.add_theme_stylebox_override("panel", UITheme.paper_panel(24))
     var lbl := Label.new()
     var txt: String = ("%d✓" % (index + 1)) if completed else ("%d" % (index + 1))
     if highlighted:
@@ -74,8 +76,9 @@ func _make_node(entry: LevelMapEntry, unlocked: bool, highlighted: bool, complet
     lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
     lbl.size = Vector2(48, 48)
+    lbl.add_theme_color_override("font_color", UITheme.ACCENT if highlighted else UITheme.INK)
     panel.add_child(lbl)
-    panel.modulate = Color.WHITE if unlocked else Color(1, 1, 1, 0.4)
+    panel.modulate = Color.WHITE if unlocked else Color(0.82, 0.8, 0.78, 0.92)
     if unlocked:
         var idx := index
         panel.gui_input.connect(func(ev: InputEvent) -> void:

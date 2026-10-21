@@ -32,6 +32,8 @@ func setup(chapters: Array, layout: WorldMapLayout, progression: LevelProgressio
 
 func _ensure_views() -> void:
     if _world_view == null:
+        UITheme.add_background(self, preload("res://assets/art/background/bg_temple.png"))
+        _add_title()
         _world_view = WorldMapView.new()
         _world_view.set_anchors_preset(Control.PRESET_FULL_RECT)
         add_child(_world_view)
@@ -40,6 +42,19 @@ func _ensure_views() -> void:
         _path_view.set_anchors_preset(Control.PRESET_FULL_RECT)
         _path_view.visible = false
         add_child(_path_view)
+
+func _add_title() -> void:
+    var title := Label.new()
+    title.text = "一 休 扫 地"
+    title.set_anchors_preset(Control.PRESET_TOP_WIDE)
+    title.offset_top = 18.0
+    title.offset_bottom = 78.0
+    title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    title.add_theme_font_size_override("font_size", 40)
+    title.add_theme_color_override("font_color", UITheme.INK)
+    title.add_theme_color_override("font_outline_color", Color(0.96, 0.93, 0.86, 0.72))
+    title.add_theme_constant_override("outline_size", 12)
+    add_child(title)
 
 func current_state() -> int:
     return _state

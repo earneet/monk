@@ -62,16 +62,18 @@ func _make_island(entry: ChapterMapEntry, ch: ChapterResource, unlocked: bool, h
     island.add_to_group("island_node")
     island.position = entry.position - Vector2(60, 40)
     island.size = Vector2(120, 80)
+    island.add_theme_stylebox_override("panel", UITheme.paper_panel(14))
     var lname := Label.new()
     lname.text = entry.icon + " " + (ch.display_name if ch != null else entry.chapter_id)
     lname.position = Vector2(6, 6)
+    lname.add_theme_color_override("font_color", UITheme.INK)
     island.add_child(lname)
     if not unlocked:
         var lock := Label.new()
         lock.text = "🔒"
         lock.position = Vector2(45, 40)
         island.add_child(lock)
-    island.modulate = Color.WHITE if unlocked else Color(1, 1, 1, 0.4)
+    island.modulate = Color.WHITE if unlocked else Color(0.82, 0.8, 0.78, 0.92)
     if highlighted:
         island.modulate = Color(1.15, 1.15, 1.15)
     if unlocked:
@@ -94,7 +96,7 @@ func _draw() -> void:
         var targets: Array[String] = from.next_ids if from.next_ids.size() > 0 else _default_next_chapter(i)
         for tid in targets:
             if _chapter_id_to_pos.has(tid):
-                draw_dashed_line(from.position + offset, (_chapter_id_to_pos[tid] as Vector2) + offset, Color(0.5, 0.45, 0.3), 2.0, 8.0)
+                draw_dashed_line(from.position + offset, (_chapter_id_to_pos[tid] as Vector2) + offset, UITheme.INK_SOFT, 3.0, 9.0)
 
 func _default_next_chapter(i: int) -> Array[String]:
     if i + 1 < _entries.size():
