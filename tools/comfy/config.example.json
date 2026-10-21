@@ -1,0 +1,9 @@
+{
+  "comfyui": {
+    "url": "http://127.0.0.1:8188"
+  },
+  "litellm": {
+    "url": "http://<litellm 网关地址>:4000",
+    "api_key": "<网关 API key>"
+  }
+}

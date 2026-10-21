@@ -1,0 +1,90 @@
+{
+  "9": {
+    "inputs": {
+      "filename_prefix": "flux2",
+      "images": ["65", 0]
+    },
+    "class_type": "SaveImage",
+    "_meta": { "title": "保存图像" }
+  },
+  "62": {
+    "inputs": {
+      "clip_name": "mistral_3_small_flux2_fp8.safetensors",
+      "type": "flux2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": { "title": "加载CLIP" }
+  },
+  "63": {
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": { "title": "加载VAE" }
+  },
+  "65": {
+    "inputs": {
+      "samples": ["70", 0],
+      "vae": ["63", 0]
+    },
+    "class_type": "VAEDecode",
+    "_meta": { "title": "VAE解码" }
+  },
+  "67": {
+    "inputs": {
+      "text": "{{prompt}}",
+      "clip": ["62", 0]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "CLIP文本编码" }
+  },
+  "68": {
+    "inputs": {
+      "width": "{{width}}",
+      "height": "{{height}}",
+      "batch_size": "{{batch}}"
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": { "title": "空Latent图像（SD3）" }
+  },
+  "69": {
+    "inputs": {
+      "shift": 3,
+      "model": ["72", 0]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": { "title": "采样算法（AuraFlow）" }
+  },
+  "70": {
+    "inputs": {
+      "seed": "{{seed}}",
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": ["69", 0],
+      "positive": ["67", 0],
+      "negative": ["71", 0],
+      "latent_image": ["68", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": { "title": "K采样器" }
+  },
+  "71": {
+    "inputs": {
+      "text": "low quality, bad anatomy, extra digits, missing digits, extra limbs, missing limbs",
+      "clip": ["62", 0]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "CLIP文本编码（负向，turbo cfg=1 下实际不生效）" }
+  },
+  "72": {
+    "inputs": {
+      "unet_name": "flux2-dev-turbo-Q4_K_M.gguf"
+    },
+    "class_type": "UnetLoaderGGUF",
+    "_meta": { "title": "Unet Loader (GGUF)" }
+  }
+}

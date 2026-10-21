@@ -1,0 +1,100 @@
+{
+  "9": {
+    "inputs": {
+      "filename_prefix": "qwen_pixel",
+      "images": ["65", 0]
+    },
+    "class_type": "SaveImage",
+    "_meta": { "title": "保存图像" }
+  },
+  "63": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": { "title": "加载VAE" }
+  },
+  "65": {
+    "inputs": {
+      "samples": ["70", 0],
+      "vae": ["63", 0]
+    },
+    "class_type": "VAEDecode",
+    "_meta": { "title": "VAE解码" }
+  },
+  "67": {
+    "inputs": {
+      "text": "Pixel Art, flat colors, hard edges, {{prompt}}",
+      "clip": ["77", 1]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "CLIP文本编码（Pixel Art 为 LoRA 触发词，模板自动加）" }
+  },
+  "68": {
+    "inputs": {
+      "width": "{{width}}",
+      "height": "{{height}}",
+      "batch_size": "{{batch}}"
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": { "title": "空Latent图像（SD3）" }
+  },
+  "69": {
+    "inputs": {
+      "shift": 2.1,
+      "model": ["77", 0]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": { "title": "采样算法（AuraFlow）" }
+  },
+  "70": {
+    "inputs": {
+      "seed": "{{seed}}",
+      "steps": 20,
+      "cfg": 2,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": ["69", 0],
+      "positive": ["67", 0],
+      "negative": ["71", 0],
+      "latent_image": ["68", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": { "title": "K采样器" }
+  },
+  "71": {
+    "inputs": {
+      "text": "low quality, bad anatomy, extra digits, missing digits, extra limbs, missing limbs, text, words, letters, chinese characters, watermark, signature, radial gradient, smooth gradient, soft glow, bloom, glow effect, smooth curves, painterly, airbrush, blurry, anti-aliasing",
+      "clip": ["77", 1]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "CLIP文本编码（负向，cfg=2 下生效）" }
+  },
+  "72": {
+    "inputs": {
+      "unet_name": "qwen-image-2512-Q4_K_M.gguf"
+    },
+    "class_type": "UnetLoaderGGUF",
+    "_meta": { "title": "Unet Loader (GGUF)" }
+  },
+  "73": {
+    "inputs": {
+      "clip_name": "Qwen2.5-VL-7B-Instruct-UD-Q4_K_XL.gguf",
+      "type": "qwen_image"
+    },
+    "class_type": "CLIPLoaderGGUF",
+    "_meta": { "title": "CLIPLoader (GGUF)" }
+  },
+  "77": {
+    "inputs": {
+      "lora_name": "Qwen-PixelArt/Qwen-Image-2512-Master-Pixel-Art-LoRA.safetensors",
+      "strength_model": 0.85,
+      "strength_clip": 0.75,
+      "model": ["72", 0],
+      "clip": ["73", 0]
+    },
+    "class_type": "LoraLoader",
+    "_meta": { "title": "加载LoRA（像素风）" }
+  }
+}

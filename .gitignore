@@ -25,3 +25,12 @@ ehthumbs.db
 
 # zcode 会话产物
 .zcode/
+
+# ComfyUI 生成产物（中间候选，不提交）
+/tools/comfy/out/
+
+# ComfyUI 真实配置（内网地址与 key，不入库）
+/tools/comfy/config.json
+
+# Python 缓存
+__pycache__/
