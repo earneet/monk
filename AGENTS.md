@@ -30,6 +30,7 @@
     │   └── ui/            # HUD、菜单
     ├── resources/         # 关卡数据 .tres
     ├── assets/{art,audio,fonts}
+    ├── tools/comfy/       # 资源生成工具链(ComfyUI 出图/音频,用法见 .agents/skills/)
     └── addons/            # 第三方插件(按需)
 
 约定:场景入 scenes/,脚本入 scripts/ 对应子目录;脚本与同名场景配对。
