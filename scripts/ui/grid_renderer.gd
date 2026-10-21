@@ -37,16 +37,66 @@ func _draw() -> void:
     var board := Rect2(-8.0, -8.0, _grid_model.size.x * cell_size + 16.0, _grid_model.size.y * cell_size + 16.0)
     draw_rect(board, COLOR_MAT)
     draw_rect(board, COLOR_MAT_BORDER, false, 2.0)
+    draw_texture_rect(TEX_FLOOR, Rect2(Vector2.ZERO, Vector2(_grid_model.size) * cell_size), false)
+    var scatter: Dictionary = {}
     for y in range(_grid_model.size.y):
         for x in range(_grid_model.size.x):
             var coord := Vector2i(x, y)
-            var rect := Rect2(x * cell_size, y * cell_size, cell_size, cell_size)
-            draw_texture_rect(_cell_texture(coord, _path_state.path), rect, false, _cell_tint(coord, _path_state.path))
+            var data: MechanicData = _mechanic_system.data_at(coord)
+            if data == null:
+                continue
+            var tex := _cell_texture(coord)
+            if _is_scatter(tex):
+                if not scatter.has(tex):
+                    scatter[tex] = {}
+                var bucket: Dictionary = scatter[tex]
+                bucket[coord] = true
+                if not bucket.has("sample"):
+                    bucket["sample"] = data
+            else:
+                var rect := Rect2(x * cell_size, y * cell_size, cell_size, cell_size)
+                draw_texture_rect(tex, rect, false, _cell_tint(data, _path_state.path))
+    for tex: Texture2D in scatter:
+        _draw_merged(tex, scatter[tex])
     for c in _path_state.path:
         if _mechanic_system.data_at(c) == null:
             draw_texture_rect(TEX_SWEPT, Rect2(c.x * cell_size, c.y * cell_size, cell_size, cell_size), false, COLOR_SWEPT)
     _draw_grid_lines()
     _draw_portal_links()
+
+func _is_scatter(tex: Texture2D) -> bool:
+    return tex == TEX_WALL or tex == TEX_WATER or tex == TEX_DWATER
+
+func _draw_merged(tex: Texture2D, cells: Dictionary) -> void:
+    # 贪心合并同行同宽的相邻格为整块矩形，消除格间接缝（岩石成片、水道成河）
+    var tint := _cell_tint(cells.get("sample"), _path_state.path) if tex == TEX_DWATER else Color.WHITE
+    var used := {}
+    for c in cells:
+        if c is not Vector2i or used.has(c):
+            continue
+        var w := 1
+        while cells.has(c + Vector2i(w, 0)) and not used.has(c + Vector2i(w, 0)):
+            w += 1
+        var h := 1
+        while true:
+            var row_ok := true
+            for i in range(w):
+                var p: Vector2i = c + Vector2i(i, h)
+                if not cells.has(p) or used.has(p):
+                    row_ok = false
+                    break
+            if not row_ok:
+                break
+            h += 1
+        for iy in range(h):
+            for ix in range(w):
+                used[c + Vector2i(ix, iy)] = true
+        var rect := Rect2(c.x * cell_size, c.y * cell_size, w * cell_size, h * cell_size)
+        var flip := absi((c.x * 7 + c.y * 13) * 2654435761) % 4
+        var t := Transform2D(0.0, Vector2(-1.0 if flip % 2 == 0 else 1.0, -1.0 if flip >= 2 else 1.0), 0.0, rect.get_center())
+        draw_set_transform_matrix(t)
+        draw_texture_rect(tex, Rect2(-rect.size / 2.0, rect.size), false, tint)
+        draw_set_transform_matrix(Transform2D())
 
 func _draw_grid_lines() -> void:
     for x in range(_grid_model.size.x + 1):
@@ -67,7 +117,7 @@ func _draw_portal_links() -> void:
             draw_string_outline(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 18, 3, Color(0.1, 0.05, 0.15))
             draw_string(font, text_pos, (_mechanic_system.data_at(endpoint) as PortalData).pair_id.substr(0, 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(0.9, 0.85, 1.0))
 
-func _cell_texture(coord: Vector2i, path: Array) -> Texture2D:
+func _cell_texture(coord: Vector2i) -> Texture2D:
     var data: MechanicData = _mechanic_system.data_at(coord)
     if data is WallData:
         return TEX_WALL
@@ -85,8 +135,7 @@ func _cell_texture(coord: Vector2i, path: Array) -> Texture2D:
         return TEX_PORTAL
     return TEX_FLOOR
 
-func _cell_tint(coord: Vector2i, path: Array) -> Color:
-    var data: MechanicData = _mechanic_system.data_at(coord)
+func _cell_tint(data: MechanicData, path: Array) -> Color:
     if data is DoorData:
         var open: bool = _mechanic_system.is_lever_pressed((data as DoorData).lever_ids, path)
         return Color.WHITE if open else TINT_INACTIVE

@@ -39,9 +39,15 @@ func _shot_landscape() -> void:
     add_child(lv)
     await _wait(0.4)
     await _snap("level_landscape_start")
-    for coord: Vector2i in [Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0), Vector2i(4, 0), Vector2i(4, 1), Vector2i(4, 2), Vector2i(4, 3), Vector2i(3, 3), Vector2i(2, 3), Vector2i(1, 3), Vector2i(0, 3), Vector2i(0, 4)]:
+    for coord: Vector2i in [Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0)]:
         lv._on_move_intent(coord)
         await _wait(0.02)
+    await _wait(0.08)
+    await _snap("level_landscape_move")
+    for coord: Vector2i in [Vector2i(4, 0), Vector2i(4, 1), Vector2i(4, 2), Vector2i(4, 3), Vector2i(3, 3), Vector2i(2, 3), Vector2i(1, 3), Vector2i(0, 3), Vector2i(0, 4)]:
+        lv._on_move_intent(coord)
+        await _wait(0.02)
+    await _wait(0.35)
     await _snap("level_landscape_swept")
     lv.queue_free()
     await _wait(0.1)
@@ -55,6 +61,7 @@ func _shot_mechanisms() -> void:
     for coord: Vector2i in [Vector2i(0, 1), Vector2i(0, 2), Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 3), Vector2i(3, 3), Vector2i(3, 2), Vector2i(3, 1), Vector2i(4, 1), Vector2i(5, 1), Vector2i(6, 1), Vector2i(6, 0)]:
         lv._on_move_intent(coord)
         await _wait(0.02)
+    await _wait(0.35)
     await _snap("level_mech_open")
     lv.queue_free()
     await _wait(0.1)
