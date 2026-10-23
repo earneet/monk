@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://kypbht2sqtvv"
-path="res://.godot/imported/stream.png-f657084c915972034206b85edc06e49c.ctex"
+uid="uid://dt0r2h4m3ivgn"
+path="res://.godot/imported/rockery.png-ca8bc557f6485a14ec5b7a4d8cfc83c0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/tiles/stream.png"
-dest_files=["res://.godot/imported/stream.png-f657084c915972034206b85edc06e49c.ctex"]
+source_file="res://assets/art/temple/rockery.png"
+dest_files=["res://.godot/imported/rockery.png-ca8bc557f6485a14ec5b7a4d8cfc83c0.ctex"]
 
 [params]
 

@@ -6,17 +6,24 @@ var _grid_model: GridModel
 var _mechanic_system: MechanicSystem
 var _path_state: PathState
 
-const FLOOR_PERIOD := 4  # floor.png 每 256px 含 4 个 64px 采样块,镜像衔接
-const FLOOR_TILE := 64
+const FLOOR_PERIOD := 4  # floor.png 每 288px 含 4 个 72px 单板, 镜像衔接
+const FLOOR_TILE := 72
 
 const TEX_FLOOR := preload("res://assets/art/tiles/floor.png")
-const TEX_WALLS: Array[Texture2D] = [
-    preload("res://assets/art/tiles/wall_0.png"),
-    preload("res://assets/art/tiles/wall_1.png"),
-    preload("res://assets/art/tiles/wall_2.png"),
-]
-const TEX_STREAM := preload("res://assets/art/tiles/stream.png")
+const TEX_WALL_H := preload("res://assets/art/tiles/wall_h.png")
+const TEX_WALL_V := preload("res://assets/art/tiles/wall_v.png")
 const TEX_POND := preload("res://assets/art/tiles/pond.png")
+const TEX_POND_T := preload("res://assets/art/tiles/pond_t.png")
+const TEX_POND_B := preload("res://assets/art/tiles/pond_b.png")
+const TEX_POND_L := preload("res://assets/art/tiles/pond_l.png")
+const TEX_POND_R := preload("res://assets/art/tiles/pond_r.png")
+const TEX_CORNER_TL := preload("res://assets/art/tiles/pond_corner_tl.png")
+const TEX_CORNER_TR := preload("res://assets/art/tiles/pond_corner_tr.png")
+const TEX_CORNER_BL := preload("res://assets/art/tiles/pond_corner_bl.png")
+const TEX_CORNER_BR := preload("res://assets/art/tiles/pond_corner_br.png")
+const TEX_WATER := preload("res://assets/art/tiles/water.png")
+const TEX_STREAM_NARROW := preload("res://assets/art/tiles/stream_narrow.png")
+const TEX_STREAM_NARROW_V := preload("res://assets/art/tiles/stream_narrow_v.png")
 const TEX_LEVER := preload("res://assets/art/tiles/lever.png")
 const TEX_DOOR := preload("res://assets/art/tiles/door.png")
 const TEX_BRIDGE := preload("res://assets/art/tiles/bridge.png")
@@ -55,7 +62,7 @@ func _draw() -> void:
                 continue
             var kind := _kind_of(data)
             if kind == "":
-                draw_texture_rect(_cell_texture(data), rect, false, _cell_tint(data, _path_state.path))
+                _draw_contain(_cell_texture(data), rect, _cell_tint(data, _path_state.path))
             else:
                 if not obstacles.has(kind):
                     obstacles[kind] = {"cells": {}, "sample": data}
@@ -112,30 +119,77 @@ func _draw_obstacles(kind: String, bucket: Dictionary) -> void:
             for ix in range(w):
                 used[c + Vector2i(ix, iy)] = true
         var rect := Rect2(c.x * cell_size, c.y * cell_size, w * cell_size, h * cell_size)
-        var hashv := absi((c.x * 7 + c.y * 13) * 2654435761)
         match kind:
             "wall":
-                var variant := TEX_WALLS[(hashv + (1 if h > w else 0)) % TEX_WALLS.size()]
-                var fit := rect.grow(-rect.size.x * 0.04)
-                var t := Transform2D(0.0, Vector2(-1.0 if hashv % 2 == 0 else 1.0, 1.0), 0.0, fit.get_center())
-                draw_set_transform_matrix(t)
-                draw_texture_rect(variant, Rect2(-fit.size / 2.0, fit.size), false)
-                draw_set_transform_matrix(Transform2D())
+                _draw_tiled(TEX_WALL_H if rect.size.x >= rect.size.y else TEX_WALL_V, rect)
             "stream":
-                if rect.size.x >= rect.size.y:
-                    draw_texture_rect(TEX_STREAM, rect, false)
-                else:
-                    var t := Transform2D(TAU / 4.0, Vector2.ONE, 0.0, rect.get_center())
-                    draw_set_transform_matrix(t)
-                    draw_texture_rect(TEX_STREAM, Rect2(-Vector2(rect.size.y, rect.size.x) / 2.0, Vector2(rect.size.y, rect.size.x)), false)
-                    draw_set_transform_matrix(Transform2D())
+                _draw_stream(rect)
             "pond":
                 var sample: MechanicData = bucket["sample"]
                 var tint := _cell_tint(sample, _path_state.path)
-                var fit := rect.grow(-rect.size.x * 0.08)
-                draw_texture_rect(TEX_POND, fit, false, tint)
+                _draw_pond(rect, tint)
             "portal":
-                draw_texture_rect(TEX_PORTAL, rect.grow(-rect.size.x * 0.04), false)
+                _draw_contain(TEX_PORTAL, rect.grow(-4.0))
+
+
+func _draw_tiled(tex: Texture2D, rect: Rect2) -> void:
+    # 原生尺寸平铺并裁到矩形内, 任何方向都不缩放
+    var tw := tex.get_width()
+    var th := tex.get_height()
+    for iy in range(ceili(rect.size.y / th)):
+        for ix in range(ceili(rect.size.x / tw)):
+            var dest := Rect2(rect.position + Vector2(ix * tw, iy * th), Vector2(tw, th))
+            var clip := dest.intersection(rect)
+            if clip.size == Vector2.ZERO:
+                continue
+            draw_texture_rect_region(tex, clip, Rect2(clip.position - dest.position, clip.size))
+
+
+func _draw_stream(rect: Rect2) -> void:
+    var cols := int(rect.size.x / cell_size)
+    var rows := int(rect.size.y / cell_size)
+    var horiz := rect.size.x >= rect.size.y
+    for iy in range(rows):
+        for ix in range(cols):
+            var tex: Texture2D
+            if horiz:
+                tex = TEX_STREAM_NARROW if rows == 1 else (
+                    TEX_POND_T if iy == 0 else (TEX_POND_B if iy == rows - 1 else TEX_WATER))
+                draw_texture(tex, rect.position + Vector2(ix, iy) * cell_size)
+            else:
+                tex = TEX_STREAM_NARROW_V if cols == 1 else (
+                    TEX_POND_L if ix == 0 else (TEX_POND_R if ix == cols - 1 else TEX_WATER))
+                draw_texture(tex, rect.position + Vector2(ix, iy) * cell_size)
+
+
+func _draw_pond(rect: Rect2, tint: Color) -> void:
+    var cols := int(rect.size.x / cell_size)
+    var rows := int(rect.size.y / cell_size)
+    if cols < 2 or rows < 2:
+        _draw_contain(TEX_POND, rect, tint)
+        return
+    draw_texture(TEX_CORNER_TL, rect.position, tint)
+    draw_texture(TEX_CORNER_TR, rect.position + Vector2((cols - 1) * cell_size, 0), tint)
+    draw_texture(TEX_CORNER_BL, rect.position + Vector2(0, (rows - 1) * cell_size), tint)
+    draw_texture(TEX_CORNER_BR, rect.position + Vector2((cols - 1) * cell_size, (rows - 1) * cell_size), tint)
+    for ix in range(1, cols - 1):
+        draw_texture(TEX_POND_T, rect.position + Vector2(ix * cell_size, 0), tint)
+        draw_texture(TEX_POND_B, rect.position + Vector2(ix * cell_size, (rows - 1) * cell_size), tint)
+    for iy in range(1, rows - 1):
+        draw_texture(TEX_POND_L, rect.position + Vector2(0, iy * cell_size), tint)
+        draw_texture(TEX_POND_R, rect.position + Vector2((cols - 1) * cell_size, iy * cell_size), tint)
+        for ix in range(1, cols - 1):
+            draw_texture(TEX_WATER, rect.position + Vector2(ix, iy) * cell_size, tint)
+
+
+func _draw_contain(tex: Texture2D, rect: Rect2, tint := Color.WHITE) -> void:
+    # 等比缩放居中放入格子, 只缩小不拉伸
+    var ts := tex.get_size()
+    if ts.x <= 0.0 or ts.y <= 0.0:
+        return
+    var s: float = minf(rect.size.x / ts.x, rect.size.y / ts.y)
+    var size := ts * s
+    draw_texture_rect(tex, Rect2(rect.position + (rect.size - size) / 2.0, size), false, tint)
 
 func _draw_grid_lines() -> void:
     for x in range(_grid_model.size.x + 1):
